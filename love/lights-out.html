@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关灯游戏！</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        .game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: fit-content; /* 让容器宽度适应内容 */
+            max-width: none; /* 移除最大宽度限制 */
+            margin: 0 auto 20px; /* 水平居中 */
+        }
+
+        .game-board {
+            display: grid;
+            gap: 2px;
+            border: 2px solid #343a40;
+            margin-bottom: 20px;
+            justify-content: center; /* 确保网格内容居中 */
+        }
+
+        .cell {
+            width: 40px;
+            /* Slightly larger for better clickability */
+            height: 40px;
+            border-radius: 5px;
+            /* Rounded corners */
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            /* Smoother transition */
+            background-color: #f0f0f0;
+            /* Light gray for "off" */
+            display: flex;
+            /* Center any potential content */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cell.on {
+            background-color: #ffcc00;
+            /*  黄色表示 "亮"  */
+        }
+
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        /* Modal Styles - Reuse from Flooder */
+        .modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .rules-section {
+            /* Reuse from Flooder */
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .rules-section h3 {
+            margin-bottom: 5px;
+            color: #0d6efd;
+        }
+
+        .rules-section ul {
+            padding-left: 20px;
+        }
+
+        /* Optional: Animation for feedback, similar to your Flooder */
+        .cell.clicked {
+            animation: pulse 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>关灯游戏！</h1>
+
+    <div class="game-container">
+        <div class="game-info">
+            <div>步数: <span id="moves">0</span></div>
+            <div>网格: <span id="grid-size-display">5x5</span></div>
+        </div>
+        <div class="game-board" id="game-board"></div>
+
+        <div class="controls">
+            <div class="mb-3 row">
+                <label for="grid-size" class="col-sm-6 col-form-label">网格大小:</label>
+                <div class="col-sm-6">
+                    <select class="form-select" id="grid-size">
+                        <option value="3">3x3</option>
+                        <option value="4">4x4</option>
+                        <option value="5" selected>5x5</option>
+                        <option value="6">6x6</option>
+                        <option value="7">7x7</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-grid">
+                <button type="button" class="btn btn-primary" id="new-game-btn">新游戏</button>
+                <button type="button" class="btn btn-secondary mt-2" id="scramble-btn">打乱</button>
+                <!-- Added Scramble -->
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助按钮 -->
+    <button type="button" class="btn btn-info position-absolute top-0 end-0 m-3" id="help-button">?</button>
+
+    <!-- 帮助模态框 (内容已更新) -->
+    <div class="modal fade" id="help-modal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helpModalLabel">如何玩关灯游戏</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="rules-section">
+                        <h3>游戏目标</h3>
+                        <p>关闭棋盘上所有的灯。</p>
+                    </div>
+
+                    <div class="rules-section">
+                        <h3>玩法</h3>
+                        <ul>
+                            <li>点击一盏灯可切换其状态（亮到灭，灭到亮）。</li>
+                            <li>点击一盏灯 *同时* 也会切换其相邻灯（上、下、左、右）的状态。</li>
+                            <li>目标是找到能关闭所有灯的点击顺序。</li>
+                        </ul>
+                    </div>
+
+                    <div class="rules-section">
+                        <h3>游戏选项</h3>
+                        <ul>
+                            <li><strong>网格大小:</strong> 选择游戏棋盘的尺寸。</li>
+                        </ul>
+                    </div>
+
+                    <div class="rules-section">
+                        <h3>策略提示</h3>
+                        <ul>
+                            <li>有系统的方法可以解决任何关灯谜题，但找到它们可能具有挑战性！</li>
+                            <li>从尝试不同的点击模式开始。</li>
+                            <li>寻找隔离亮灯的方法。</li>
+                            <li>有时看似让情况变糟的一步实际上可能为解决方案奠定基础。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 胜利模态框 -->
+    <div class="modal fade" id="win-modal" tabindex="-1" aria-labelledby="winModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="winModalLabel">恭喜！</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                </div>
+                <div class="modal-body">
+                    <p>你用 <span id="final-moves"></span> 步解开了谜题！</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="new-game-modal-btn">新游戏</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+    <script>
+        // --- 游戏状态 ---
+        const gameState = {
+            board: [],
+            size: 5, // 默认大小
+            moves: 0,
+        };
+
+        // --- DOM 元素 ---
+        const gameBoard = document.getElementById('game-board');
+        const gridSizeSelect = document.getElementById('grid-size');
+        const newGameBtn = document.getElementById('new-game-btn');
+        const scrambleBtn = document.getElementById('scramble-btn'); // 添加打乱按钮
+        const helpButton = document.getElementById('help-button');
+        const helpModal = document.getElementById('help-modal');
+        const winModal = document.getElementById('win-modal');
+        const movesDisplay = document.getElementById('moves');
+        const gridSizeDisplay = document.getElementById('grid-size-display');
+        const finalMovesDisplay = document.getElementById('final-moves');
+        const newGameModalBtn = document.getElementById('new-game-modal-btn');
+
+        // Bootstrap 模态框实例
+        const helpModalInstance = new bootstrap.Modal(helpModal);
+        const winModalInstance = new bootstrap.Modal(winModal);
+
+        // --- 游戏函数 ---
+
+        // 初始化游戏
+        function initGame() {
+            gameState.moves = 0;
+            movesDisplay.textContent = gameState.moves;
+            createBoard();
+            scrambleBoard(); // 从打乱的棋盘开始
+            updateBoardDisplay();
+        }
+
+        // 创建游戏棋盘（初始状态：全灭）
+        function createBoard() {
+            gameState.board = [];
+            gameBoard.innerHTML = '';
+            gameBoard.style.gridTemplateColumns = `repeat(${gameState.size}, 40px)`;  // 更新格子大小
+            gridSizeDisplay.textContent = `${gameState.size}x${gameState.size}`;
+
+            for (let row = 0; row < gameState.size; row++) {
+                gameState.board[row] = [];
+                for (let col = 0; col < gameState.size; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    // 初始时，所有格子为灭
+                    gameState.board[row][col] = false; // false = 灭，true = 亮
+                    cell.addEventListener('click', handleCellClick);
+                    gameBoard.appendChild(cell);
+                }
+            }
+        }
+
+        // 处理格子点击
+        function handleCellClick(event) {
+            const cell = event.target;
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+
+            toggleLights(row, col);
+            gameState.moves++;
+            movesDisplay.textContent = gameState.moves;
+            updateBoardDisplay();  // 切换后更新
+            checkWin();
+        }
+
+        // 切换点击的格子及其相邻格子
+        function toggleLights(row, col) {
+            const cellsToToggle = [
+                [row, col],     // 点击的格子本身
+                [row - 1, col], // 上方
+                [row + 1, col], // 下方
+                [row, col - 1], // 左方
+                [row, col + 1]  // 右方
+            ];
+
+            for (const [r, c] of cellsToToggle) {
+                if (r >= 0 && r < gameState.size && c >= 0 && c < gameState.size) {
+                    gameState.board[r][c] = !gameState.board[r][c];
+                }
+            }
+        }
+
+        // 更新棋盘的视觉状态
+        function updateBoardDisplay() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                cell.classList.toggle('on', gameState.board[row][col]); // 添加/移除 'on' 类
+                cell.classList.add('clicked');  // 用于动画
+                setTimeout(() => cell.classList.remove('clicked'), 300); // 动画结束后移除
+            });
+        }
+
+        // 打乱棋盘（用于新游戏）
+        function scrambleBoard() {
+            const scrambleMoves = gameState.size * gameState.size * 2; // 调整难度
+            for (let i = 0; i < scrambleMoves; i++) {
+                const row = Math.floor(Math.random() * gameState.size);
+                const col = Math.floor(Math.random() * gameState.size);
+                toggleLights(row, col);
+            }
+            updateBoardDisplay();
+            gameState.moves = 0;
+            movesDisplay.textContent = gameState.moves;
+        }
+
+        // 检查胜利条件（所有灯灭）
+        function checkWin() {
+            for (let row = 0; row < gameState.size; row++) {
+                for (let col = 0; col < gameState.size; col++) {
+                    if (gameState.board[row][col]) {
+                        return; // 发现仍亮着的灯
+                    }
+                }
+            }
+            // 如果执行到这里，所有灯已灭
+            finalMovesDisplay.textContent = gameState.moves;
+            setTimeout(() => { winModalInstance.show(); }, 500);
+        }
+
+        // --- 事件监听器 ---
+        newGameBtn.addEventListener('click', () => {
+            gameState.size = parseInt(gridSizeSelect.value);
+            initGame();
+        });
+
+        scrambleBtn.addEventListener('click', () => {
+            scrambleBoard();
+        });
+
+        helpButton.addEventListener('click', () => {
+            helpModalInstance.show();
+        });
+        newGameModalBtn.addEventListener('click', () => {
+            winModalInstance.hide();
+            gameState.size = parseInt(gridSizeSelect.value);
+            initGame();
+        });
+
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+
+</html>

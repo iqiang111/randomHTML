@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Particle Galaxy</title>
+  <style>
+    html, body { margin:0; padding:0; overflow:hidden; background:#000; }
+    canvas { display:block; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <script>
+    (function(){
+      const canvas = document.getElementById('c');
+      const ctx = canvas.getContext('2d');
+      let dpr = window.devicePixelRatio || 1;
+      let cw, ch, cx, cy, maxR;
+      let particles = [];
+      const COUNT = 1200;
+      // 初始化画布尺寸、中心点、最大半径
+      function initCanvas(){
+        dpr = window.devicePixelRatio || 1;
+        cw = window.innerWidth;
+        ch = window.innerHeight;
+        canvas.width = cw * dpr;
+        canvas.height = ch * dpr;
+        canvas.style.width = cw + 'px';
+        canvas.style.height = ch + 'px';
+        ctx.scale(dpr, dpr);
+        cx = cw / 2;
+        cy = ch / 2;
+        maxR = Math.hypot(cw, ch) / 2;
+      }
+      // 重置并创建粒子
+      function initParticles(){
+        particles = [];
+        for(let i=0; i<COUNT; i++){
+          let r      = Math.random() * maxR;               // 半径
+          let angle  = Math.random() * Math.PI * 2;         // 角度
+          let speed  = Math.random() * 0.5 + 0.5;           // 速度系数
+          let hue    = Math.random() * 80 + 200;            // 颜色色相 200–280
+          let light  = Math.random() * 20 + 50;             // 亮度 50–70
+          let alpha  = Math.random() * 0.5 + 0.3;           // 透明度
+          let size   = Math.random() * 1.5 + 0.5;           // 大小
+          particles.push({ r, angle, speed, hue, light, alpha, size });
+        }
+      }
+      // 窗口缩放时重置
+      window.addEventListener('resize', function(){
+        initCanvas();
+        initParticles();
+      });
+      // 鼠标移动改变星云中心
+      window.addEventListener('mousemove', function(e){
+        cx = e.clientX;
+        cy = e.clientY;
+      });
+      // 动画主循环
+      function animate(){
+        // 用半透明黑色覆盖上一帧，制造拖尾效果
+        ctx.fillStyle = 'rgba(0,0,0,0.08)';
+        ctx.fillRect(0,0,cw,ch);
+        ctx.globalCompositeOperation = 'lighter';
+
+        for(let p of particles){
+          // 向外漂移
+          p.r += p.speed * 0.3;
+          // 旋转速度在中心附近更快，越远越慢
+          let t = p.r / maxR;
+          p.angle += (0.0001 + 0.03 * (1 - t)) * p.speed;
+          // 计算屏幕坐标
+          let x = cx + p.r * Math.cos(p.angle);
+          let y = cy + p.r * Math.sin(p.angle);
+          // 出界就重置到中心
+          if(p.r > maxR){
+            p.r = 0;
+            p.angle = Math.random() * Math.PI * 2;
+          }
+          // 绘制小星点
+          ctx.fillStyle = `hsla(${p.hue},80%,${p.light}%,${p.alpha})`;
+          ctx.beginPath();
+          ctx.arc(x, y, p.size, 0, Math.PI*2);
+          ctx.fill();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        requestAnimationFrame(animate);
+      }
+
+      // 启动
+      initCanvas();
+      initParticles();
+      animate();
+    })();
+  </script>
+</body>
+</html>

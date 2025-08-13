@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>给曹明婷的导航页</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fce4ec;
+            /* 淡粉色背景 */
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: #e91e63;
+            /* 粉色字体 */
+        }
+
+        header {
+            background-color: #f48fb1;
+            /* 深粉色标题栏 */
+            color: white;
+            padding: 20px 0;
+            font-size: 2em;
+            font-weight: bold;
+            border-bottom: 5px solid #f06292;
+            /* 加粗标题栏下边框 */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .category {
+            margin-bottom: 30px;
+        }
+
+        .category h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #f06292;
+            /* 深粉色标题 */
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .link-box {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .link-box:hover {
+            transform: scale(1.1);
+        }
+
+        .link-box a {
+            text-decoration: none;
+            color: #e91e63;
+            /* 粉色链接 */
+            font-weight: bold;
+            display: block;
+        }
+
+        /* 可爱元素 */
+        .heart {
+            color: #e91e63;
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            .link-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        给最爱的曹明婷
+    </header>
+
+    <div class="container">
+        <div class="category">
+            <h2><span class="heart">💖</span> 爱你曹明婷</h2>
+            <div class="link-grid">
+                <div class="link-box">
+                    <a href="love_cmt.html">表白页面</a>
+                </div>
+                <div class="link-box">
+                    <a href="love_Cmt.html">浪漫告白</a>
+                </div>
+                <div class="link-box">
+                    <a href="happy.html">快乐每一天</a>
+                </div>
+                <div class="link-box">
+                    <a href="happy520.html">宝贝520快乐</a>
+                </div>
+                <div class="link-box">
+                    <a href="gallery.html">美好回忆画廊</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="category">
+            <h2><span class="heart">🎮</span> 休闲Game</h2>
+            <div class="link-grid">
+                <div class="link-box">
+                    <a href="flood-it.html">颜色填充</a>
+                </div>
+                <div class="link-box">
+                    <a href="lights-out.html">关灯游戏</a>
+                </div>
+                <!-- <div class="link-box">
+                    <a href="game3.html">连连看</a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <footer>
+        <img src="https://count.getloli.com/@19565880268@163.com?name=19565880268%40163.com&theme=3d-num&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="Visitor Count">
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>皖赣山水探秘之旅（景德镇·黄山·宣城）</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Google Fonts - Noto Sans SC (for better Chinese display) & Open Sans -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Open+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* A4 Page Size and Print Margins */
+        .A4-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 10mm;
+            /* Overall print margin */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', 'Open Sans', sans-serif;
+            color: #333;
+        }
+
+        /* Print-specific CSS */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                /* Ensure background colors print */
+            }
+
+            .A4-page {
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+                /* Let @page margin handle it */
+            }
+
+            /* Avoid page breaks inside specific elements */
+            .no-break {
+                page-break-inside: avoid;
+            }
+
+            .print-hidden {
+                display: none;
+            }
+
+            .print-visible {
+                display: block !important;
+            }
+
+            .page-break {
+                page-break-after: always;
+            }
+
+            /* Ensure text contrast for black and white printing */
+            .text-gray-800 {
+                color: #2d3748 !important;
+            }
+
+            .bg-blue-50 {
+                background-color: #eff6ff !important;
+            }
+
+            .bg-yellow-50 {
+                background-color: #fffbeb !important;
+            }
+
+            .bg-green-50 {
+                background-color: #ecfdf5 !important;
+            }
+        }
+
+        /* Animation for elements entering viewport */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered delay for grid items */
+        .animated-item:nth-child(1) {
+            transition-delay: 0.1s;
+        }
+
+        .animated-item:nth-child(2) {
+            transition-delay: 0.2s;
+        }
+
+        .animated-item:nth-child(3) {
+            transition-delay: 0.3s;
+        }
+
+        .animated-item:nth-child(4) {
+            transition-delay: 0.4s;
+        }
+
+        .animated-item:nth-child(5) {
+            transition-delay: 0.5s;
+        }
+
+        .animated-item:nth-child(6) {
+            transition-delay: 0.6s;
+        }
+
+        /* Add more for longer lists */
+
+        /* Custom Colors (adjust as needed for branding/preference) */
+        :root {
+            --primary-color: #2563eb;
+            /* Blue-700 */
+            --secondary-color: #10b981;
+            /* Green-500 */
+            --accent-color: #f59e0b;
+            /* Amber-500 */
+            --light-bg: #f8fafc;
+            /* Slate-50 */
+            --border-color: #e2e8f0;
+            /* Slate-200 */
+        }
+
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .bg-primary-light {
+            background-color: var(--light-bg);
+        }
+
+        .border-primary {
+            border-color: var(--border-color);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex justify-center py-8">
+
+    <div class="A4-page bg-white rounded-lg shadow-lg relative overflow-hidden">
+        <!-- Optional cutting guides (for display, hidden in print) -->
+        <div class="absolute top-0 left-0 w-4 h-4 border-l border-t border-gray-400 print-hidden opacity-50"></div>
+        <div class="absolute top-0 right-0 w-4 h-4 border-r border-t border-gray-400 print-hidden opacity-50"></div>
+        <div class="absolute bottom-0 left-0 w-4 h-4 border-l border-b border-gray-400 print-hidden opacity-50"></div>
+        <div class="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-gray-400 print-hidden opacity-50"></div>
+
+
+        <!-- 行程标题区 -->
+        <header class="text-center pb-6 mb-6 border-b border-dashed border-gray-300 no-break">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-map-marked-alt text-primary mr-3"></i>皖赣山水探秘之旅
+            </h1>
+            <p class="text-xl text-gray-700 mb-4">景德镇 · 黄山 · 宣城</p>
+            <div class="grid grid-cols-2 gap-4 text-gray-600 text-sm md:text-base">
+                <div class="flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-lg text-secondary mr-2"></i>
+                    <span>旅行日期：<strong class="text-gray-800">2024年8月15日 - 8月20日</strong> (6天5夜)</span>
+                </div>
+                <div class="flex items-center justify-center">
+                    <i class="fas fa-users text-lg text-secondary mr-2"></i>
+                    <span>同行人群：<strong class="text-gray-800">贾国强 & 曹明婷</strong></span>
+                </div>
+                <div
+                    class="col-span-2 flex items-center justify-center text-center mt-2 p-2 bg-yellow-50 rounded-lg shadow-sm">
+                    <i class="fas fa-cloud-sun-rain text-lg text-accent-color mr-2"></i>
+                    <span class="text-sm md:text-base text-gray-700">
+                        <strong class="text-black">8月皖赣天气提示：</strong>
+                        盛夏时节，多雨（梅雨季末或台风影响），气温较高。请务必携带雨具、防晒用品、轻薄透气衣物及防蚊用品。山区温差大，备件薄外套。
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 行程概览区 -->
+        <section class="mb-8 no-break animate-on-scroll">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-list-alt text-primary mr-3"></i>行程概览
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="bg-blue-50 p-4 rounded-lg shadow-sm flex items-center animated-item">
+                    <i class="fas fa-plane-departure text-xl text-blue-600 mr-3"></i>
+                    <span class="font-medium text-gray-700">Day 1：合肥出发，文化瓷都景德镇</span>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg shadow-sm flex items-center animated-item">
+                    <i class="fas fa-palette text-xl text-blue-600 mr-3"></i>
+                    <span class="font-medium text-gray-700">Day 2：景德镇瓷韵深度游</span>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg shadow-sm flex items-center animated-item">
+                    <i class="fas fa-mountain text-xl text-green-600 mr-3"></i>
+                    <span class="font-medium text-gray-700">Day 3：前往黄山，养精蓄锐</span>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg shadow-sm flex items-center animated-item">
+                    <i class="fas fa-cloud text-xl text-green-600 mr-3"></i>
+                    <span class="font-medium text-gray-700">Day 4：黄山奇景，如画仙境</span>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg shadow-sm flex items-center animated-item">
+                    <i class="fas fa-city text-xl text-purple-600 mr-3"></i>
+                    <span class="font-medium text-gray-700">Day 5：黄山周边，抵达宣城</span>
+                </div>
+                <div class="bg-pink-50 p-4 rounded-lg shadow-sm flex items-center animated-item">
+                    <i class="fas fa-undo-alt text-xl text-pink-600 mr-3"></i>
+                    <span class="font-medium text-gray-700">Day 6：宣城休闲，返程合肥</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 详细时间表区 -->
+        <section class="mb-8 no-break animate-on-scroll">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-clock text-primary mr-3"></i>详细时间表
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-primary text-sm shadow-md rounded-lg">
+                    <thead class="bg-primary-light border-b border-primary">
+                        <tr>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-700 w-20">日期</th>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-700 w-20">时间</th>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-700">地点与活动</th>
+                            <th class="py-2 px-3 text-left font-semibold text-gray-700">详情与备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Day 1 -->
+                        <tr class="border-b border-dashed border-gray-200 no-break">
+                            <td class="py-3 px-3 font-semibold text-primary align-top">Day 1<br>8月15日</td>
+                            <td class="py-3 px-3 align-top">上午<br>下午<br>傍晚</td>
+                            <td class="py-3 px-3 align-top">
+                                <i class="fas fa-car-side text-gray-500 mr-1"></i>合肥 → 景德镇<br>
+                                <i class="fas fa-hotel text-gray-500 mr-1"></i>办理入住<br>
+                                <i class="fas fa-walking text-gray-500 mr-1"></i>陶溪川文创街区
+                            </td>
+                            <td class="py-3 px-3 text-gray-700 align-top">
+                                合肥南站搭乘高铁至景德镇北站。<br>
+                                建议选择景德镇北附近或市区的经济型酒店/民宿，方便出行。<br>
+                                小红书推荐： 晚上这里很热闹，有创意市集、小酒馆和特色餐饮。适合散步、拍照和感受艺术氛围。<br>
+                                <span><a href="https://www.xiaohongshu.com/explore/tag/%E9%9F%B6%E6%BA%AA%E5%B7%9D%E6%96%87%E5%88%9B%E8%A1%97%E5%8C%BA"
+                                        target="_blank" class="text-blue-500 hover:underline text-xs">小红书相关攻略</a></span>
+                            </td>
+                        </tr>
+                        <!-- Day 2 -->
+                        <tr class="border-b border-dashed border-gray-200 no-break">
+                            <td class="py-3 px-3 font-semibold text-primary align-top">Day 2<br>8月16日</td>
+                            <td class="py-3 px-3 align-top">上午<br>下午<br>傍晚</td>
+                            <td class="py-3 px-3 align-top">
+                                <i class="fas fa-museum text-gray-500 mr-1"></i>景德镇陶瓷博物馆 / 古窑民俗博览区<br>
+                                <i class="fas fa-hands-helping text-gray-500 mr-1"></i>三宝国际瓷谷<br>
+                                <i class="fas fa-utensils text-gray-500 mr-1"></i>品尝当地美食
+                            </td>
+                            <td class="py-3 px-3 text-gray-700 align-top">
+                                两者选一：陶瓷博物馆免费，需预约；古窑民俗博览区门票95元/人，更具互动性，有非遗表演、手工体验等。<br>
+                                小红书推荐： 三宝村是艺术家的聚集地，很安静，适合喜欢艺术和摄影的游客。交通可能不便，建议打车。<br>
+                                <span><a href="https://www.xiaohongshu.com/explore/tag/%E6%99%AF%E5%BE%B7%E9%95%87%E5%8F%A4%E7%AA%91%E6%B0%91%E4%BF%97%E5%8D%9A%E8%A7%88%E5%8C%BA"
+                                        target="_blank" class="text-blue-500 hover:underline text-xs">古窑攻略</a></span> |
+                                <span><a href="https://www.xiaohongshu.com/explore/tag/%E4%B8%89%E5%AE%9D%E5%9B%BD%E9%99%85%E7%93%B7%E8%B0%B7"
+                                        target="_blank" class="text-blue-500 hover:underline text-xs">三宝村攻略</a></span>
+                            </td>
+                        </tr>
+                        <!-- Day 3 -->
+                        <tr class="border-b border-dashed border-gray-200 no-break">
+                            <td class="py-3 px-3 font-semibold text-primary align-top">Day 3<br>8月17日</td>
+                            <td class="py-3 px-3 align-top">上午<br>下午<br>傍晚</td>
+                            <td class="py-3 px-3 align-top">
+                                <i class="fas fa-train text-gray-500 mr-1"></i>景德镇 → 黄山<br>
+                                <i class="fas fa-hotel text-gray-500 mr-1"></i>入住汤口镇<br>
+                                <i class="fas fa-campground text-gray-500 mr-1"></i>采购登山物资
+                            </td>
+                            <td class="py-3 px-3 text-gray-700 align-top">
+                                景德镇北站乘高铁至黄山北站，约1小时车程。黄山北站有直达汤口镇（黄山风景区南大门）的旅游班车，约1小时。<br>
+                                建议入住汤口镇，便于次日一大早登山。<br>
+                                准备登山所需的干粮、水、一次性雨衣、防晒、以及双肩包。
+                            </td>
+                        </tr>
+                        <!-- Day 4 -->
+                        <tr class="border-b border-dashed border-gray-200 no-break">
+                            <td class="py-3 px-3 font-semibold text-primary align-top">Day 4<br>8月18日</td>
+                            <td class="py-3 px-3 align-top">全天</td>
+                            <td class="py-3 px-3 align-top">
+                                <i class="fas fa-hiking text-gray-500 mr-1"></i>黄山一日精华游<br>
+                                <small>(云谷寺-始信峰-光明顶-飞来石-排云亭-西海大峡谷(视体力)-玉屏楼-迎客松)</small>
+                            </td>
+                            <td class="py-3 px-3 text-gray-700 align-top">
+                                早起从汤口镇乘坐景区大巴到云谷寺，乘坐云谷索道上山。<br>
+                                精华路线：
+                                始信峰看黄山松，光明顶赏全景（最高峰之一），西海大峡谷（视体力决定是否深入，可走一环二环回排云亭），从天海经鳌鱼峰下山至玉屏楼看迎客松，然后从慈光阁索道下山。<br>
+                                体力消耗大，务必穿舒适的登山鞋，带足够的水和食物！<br>
+                                门票：190元/人，单程索道：80元/人（建议双程索道以节省体力）。<br>
+                                <span><a href="https://www.xiaohongshu.com/explore/tag/%E9%BB%84%E5%B1%B1%E6%94%BB%E7%95%A5"
+                                        target="_blank" class="text-blue-500 hover:underline text-xs">黄山详尽攻略</a></span>
+                            </td>
+                        </tr>
+                        <!-- Day 5 -->
+                        <tr class="border-b border-dashed border-gray-200 no-break">
+                            <td class="py-3 px-3 font-semibold text-primary align-top">Day 5<br>8月19日</td>
+                            <td class="py-3 px-3 align-top">上午<br>中午<br>下午</td>
+                            <td class="py-3 px-3 align-top">
+                                <i class="fas fa-history text-gray-500 mr-1"></i>屯溪老街 (视时间)<br>
+                                <i class="fas fa-train text-gray-500 mr-1"></i>黄山北 → 宣城<br>
+                                <i class="fas fa-hotel text-gray-500 mr-1"></i>办理入住，市区闲逛
+                            </td>
+                            <td class="py-3 px-3 text-gray-700 align-top">
+                                如果昨日黄山游玩后体力尚可，可从汤口镇乘车返回黄山市区（屯溪区），游览屯溪老街，感受徽派建筑和文化，品尝小吃。<br>
+                                黄山北站搭乘高铁至宣城站，约50分钟-1小时。<br>
+                                抵达宣城后，入住酒店休息，逛逛市区，感受慢节奏生活。宣城小众景点较多，可根据兴趣和体力灵活安排。
+                                <span><a href="https://www.xiaohongshu.com/explore/tag/%E5%B1%AF%E6%BA%AA%E8%80%81%E8%A1%97"
+                                        target="_blank" class="text-blue-500 hover:underline text-xs">屯溪老街攻略</a></span>
+                            </td>
+                        </tr>
+                        <!-- Day 6 -->
+                        <tr class="no-break">
+                            <td class="py-3 px-3 font-semibold text-primary align-top">Day 6<br>8月20日</td>
+                            <td class="py-3 px-3 align-top">上午<br>中午</td>
+                            <td class="py-3 px-3 align-top">
+                                <i class="fas fa-hand-holding-heart text-gray-500 mr-1"></i>宣城小吃/博物馆 (视兴趣)<br>
+                                <i class="fas fa-train text-gray-500 mr-1"></i>宣城 → 合肥
+                            </td>
+                            <td class="py-3 px-3 text-gray-700 align-top">
+                                可品尝宣城特色小吃，如宣城鸭脚包、水阳三宝等。或参观宣城博物馆。<br>
+                                宣城站搭乘高铁至合肥南站，约1.5-2小时。结束愉快的皖赣之旅！
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 交通信息区 -->
+        <section class="mb-8 no-break animate-on-scroll">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-bus text-primary mr-3"></i>主要交通预估 (两人往返总计)
+            </h2>
+            <div class="space-y-4">
+                <div class="bg-indigo-50 p-4 rounded-lg shadow-sm flex items-center">
+                    <i class="fas fa-train text-xl text-indigo-600 mr-3"></i>
+                    <div>
+                        <p class="font-medium text-gray-700">合肥南 ↔ 景德镇北 (高铁二等座)</p>
+                        <p class="text-sm text-gray-600">单程约1.5-2小时；<strong class="text-gray-800">往返约 300-360 元</strong>
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 p-4 rounded-lg shadow-sm flex items-center">
+                    <i class="fas fa-train text-xl text-indigo-600 mr-3"></i>
+                    <div>
+                        <p class="font-medium text-gray-700">景德镇北 ↔ 黄山北 (高铁二等座)</p>
+                        <p class="text-sm text-gray-600">单程约1小时；<strong class="text-gray-800">往返约 120-160 元</strong></p>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 p-4 rounded-lg shadow-sm flex items-center">
+                    <i class="fas fa-bus-alt text-xl text-indigo-600 mr-3"></i>
+                    <div>
+                        <p class="font-medium text-gray-700">黄山北站 ↔ 汤口镇 (旅游班线)</p>
+                        <p class="text-sm text-gray-600">单程约1小时；<strong class="text-gray-800">往返约 50 元/人 * 2 =
+                                100元</strong></p>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 p-4 rounded-lg shadow-sm flex items-center">
+                    <i class="fas fa-train text-xl text-indigo-600 mr-3"></i>
+                    <div>
+                        <p class="font-medium text-gray-700">黄山北 ↔ 宣城 (高铁二等座)</p>
+                        <p class="text-sm text-gray-600">单程约50分钟；<strong class="text-gray-800">往返约 140-200 元</strong>
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-indigo-50 p-4 rounded-lg shadow-sm flex items-center">
+                    <i class="fas fa-train text-xl text-indigo-600 mr-3"></i>
+                    <div>
+                        <p class="font-medium text-gray-700">宣城 ↔ 合肥南 (高铁二等座)</p>
+                        <p class="text-sm text-gray-600">单程约1.5-2小时；<strong class="text-gray-800">往返约 160-220 元</strong>
+                        </p>
+                    </div>
+                </div>
+                <p class="text-gray-700 text-sm mt-4 text-center">
+                    <strong class="text-primary">城际交通总计预估：约 820 - 1040 元</strong> (以实际购票价格为准)
+                </p>
+            </div>
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg shadow-sm text-sm no-break">
+                <h3 class="font-semibold text-gray-700 mb-2 flex items-center"><i
+                        class="fas fa-map-signs mr-2 text-primary"></i>高德地图路线规划建议:</h3>
+                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                    <li>城市间交通： 主要依靠火车（高铁）。建议提前12306官网或APP购买车票。</li>
+                    <li>市内交通： 景德镇、宣城主要景点可打车（滴滴）、公交车。黄山风景区内有统一班车，索道连接不同区域。</li>
+                    <li>景点步行： 黄山游览以步行为主，建议全程开启高德地图导航或离线地图，避免迷路。预估步行时间可参考高德地图推荐路线。</li>
+                    <li>高德地图使用：
+                        在每个城市内，打开高德地图APP，输入目的地，选择“驾车”、“步行”或“公交”模式，即可获取最实时、最佳的路线与预估时间。尤其在黄山上，可使用其提供的景区导览地图。</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Break page if content is too long for one A4 page. Optional. -->
+        <!-- <div class="page-break"></div> -->
+
+        <!-- 住宿与餐饮区 -->
+        <section class="mb-8 no-break animate-on-scroll">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-bed text-primary mr-3"></i>住宿与餐饮建议
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-red-50 p-4 rounded-lg shadow-sm animated-item">
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center"><i
+                            class="fas fa-hotel text-red-600 mr-2"></i>住宿</h3>
+                    <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                        <li>整体策略： 预算有限，建议选择经济型酒店、连锁快捷酒店或评价良好的民宿。价格目标：约 150-250元/晚。</li>
+                        <li>景德镇： 可选择火车站附近或市中心（如人民广场/陶溪川周边），交通便利。</li>
+                        <li>黄山（汤口）： 务必选择汤口镇靠近换乘中心的住宿，确保次日一早能方便进入景区。</li>
+                        <li>宣城： 选择市中心或火车站附近，方便餐饮和返程。</li>
+                        <li>小贴士： 8月中旬是旅游旺季，请务必提前在去哪儿、携程等平台预订住宿！</li>
+                    </ul>
+                </div>
+                <div class="bg-teal-50 p-4 rounded-lg shadow-sm animated-item">
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center"><i
+                            class="fas fa-utensils text-teal-600 mr-2"></i>餐饮</h3>
+                    <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                        <li>整体策略： 尽量品尝当地小吃，选择街边小店或大众点评评分高的苍蝇馆子，控制正餐预算。</li>
+                        <li>景德镇： 各种炒粉、冷粉、饺子粑、碱水粑、油条包麻糍。</li>
+                        <li>黄山： 山下汤口镇有徽菜馆，山上餐饮昂贵且选择少，务必自带充足干粮和水。</li>
+                        <li>宣城： 宣城鸭脚包、水阳三宝、广德毛峰、徽式点心。</li>
+                        <li>预算建议： 每餐尽量控制在50-80元/两人，小吃零食另算。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实用信息区 -->
+        <section class="mb-8 no-break animate-on-scroll">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-info-circle text-primary mr-3"></i>实用信息
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-50 p-4 rounded-lg shadow-sm animated-item">
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center"><i
+                            class="fas fa-phone-alt text-gray-600 mr-2"></i>紧急联系电话</h3>
+                    <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                        <li>报警：110</li>
+                        <li>急救：120</li>
+                        <li>火警：119</li>
+                        <li>旅游投诉：12301</li>
+                        <li>黄山风景区紧急电话：0559-5561111</li>
+                        <li>滴滴出行客服：400-600-6666</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg shadow-sm animated-item">
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center"><i
+                            class="fas fa-suitcase-rolling text-gray-600 mr-2"></i>行李清单提醒</h3>
+                    <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                        <li>证件： 身份证、学生证 (如有)。</li>
+                        <li>衣物： 速干衣、短袖、薄外套 (应对温差)，舒适的鞋子 (尤其徒步鞋)。</li>
+                        <li>防晒： 防晒霜、太阳镜、遮阳帽。</li>
+                        <li>雨具： 雨伞、轻便雨衣 (黄山必备)。</li>
+                        <li>药品： 常备药，防蚊水，肠胃药，创可贴，葡萄糖 (黄山补充体力)。</li>
+                        <li>电子产品： 充电宝、数据线、相机。</li>
+                        <li>清洁： 个人洗漱用品、湿纸巾。</li>
+                        <li>其他： 背包、水杯、小零食、现金 (少量备用)。</li>
+                    </ul>
+                </div>
+
+
+                <div class="col-span-1 md:col-span-2 bg-yellow-50 p-4 rounded-lg shadow-sm animated-item no-break">
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center"><i
+                            class="fas fa-money-bill-wave text-accent-color mr-2"></i>预算摘要与建议 (两人总计)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div>
+                            <p class="text-xs text-gray-600 italic mb-2">以下为预估值，消费习惯差异较大，仅供参考。</p>
+                            <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                                <li>住宿 (5晚)： 约 1000 - 1250 元 (目标200-250元/晚)</li>
+                                <li>城际交通： 约 820 - 1040 元</li>
+                                <li>景点门票： 约 950 - 1000 元 (含黄山双程缆车，景德镇古窑)</li>
+                                <li>餐饮及市内交通： 约 1200 - 1500 元 (目标200-250元/天)</li>
+                                <li>总计预估： <strong class="text-primary text-lg">约 3970 - 4790 元</strong></li>
+                            </ul>
+                            <p class="mt-3 text-sm text-gray-800 font-semibold">
+                                <i class="fas fa-exclamation-triangle text-red-500 mr-1"></i>温馨提示：<span
+                                    class="text-gray-700 font-normal">您的预算较为紧张，行程中需尽量选择高性价比的交通和餐饮。如黄山景区内餐食住宿非常昂贵，务必自备！</span>
+                            </p>
+                        </div>
+                        <div>
+                            <canvas id="budgetChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-1 md:col-span-2 bg-green-50 p-4 rounded-lg shadow-sm animated-item no-break">
+                    <h3 class="font-semibold text-gray-800 mb-2 flex items-center"><i
+                            class="fas fa-lightbulb text-green-600 mr-2"></i>重要提示与注意事项</h3>
+                    <ul class="list-disc list-inside text-gray-700 text-sm space-y-1">
+                        <li>提前购票： 高峰期车票和黄山门票、索道票建议提前线上购买，避免到场排队或无票。</li>
+                        <li>黄山登山： 量力而行，不追求打卡所有景点。切勿私自脱离登山道。</li>
+                        <li>防暑降温： 8月天气炎热，注意补充水分，避免中暑。</li>
+                        <li>防蚊虫： 山区和水边蚊虫较多，备好驱蚊用品。</li>
+                        <li>文明旅游： 尊重当地风俗习惯，保护环境，不乱扔垃圾。</li>
+                        <li>安全第一： 尤其是在黄山，注意脚下安全，小雨天气山路湿滑，谨慎慢行。</li>
+                        <li>摄影设备： 黄山景色绝美，建议带上相机记录美好瞬间。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center text-xs text-gray-500 mt-8 pt-4 border-t border-dashed border-gray-300 no-break">
+            <p>&copy; 2024 AI 旅行规划师 | 祝您旅途愉快！</p>
+            <p>数据源：模拟自小红书及各类旅游平台公开信息，最终价格以实际发生为准。</p>
+        </footer>
+
+        <!-- Print Button -->
+        <div class="print-hidden fixed bottom-6 right-6 z-50">
+            <button onclick="window.print()"
+                class="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-print mr-2"></i> 打印攻略
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js for Budget Summary
+        const ctx = document.getElementById('budgetChart').getContext('2d');
+        const budgetChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['住宿', '城际交通', '景点门票', '餐饮及市内交通'],
+                datasets: [{
+                    data: [1125, 930, 975, 1350], // Mid-point estimates from above (sum 4380)
+                    backgroundColor: [
+                        '#FF6384', // Red
+                        '#36A2EB', // Blue
+                        '#FFCE56', // Yellow
+                        '#4BC0C0'  // Green
+                    ],
+                    hoverBackgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0'
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 12,
+                                family: 'Noto Sans SC'
+                            },
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                let label = tooltipItem.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += tooltipItem.raw + ' 元';
+                                return label;
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    padding: 0
+                }
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.animate-on-scroll');
+            const observerOptions = {
+                root: null, // relative to the viewport
+                rootMargin: '0px',
+                threshold: 0.1 // trigger when 10% of the item is visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Stop observing once animated
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+
+</html>

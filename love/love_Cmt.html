@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浪漫表白</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ffe6ea;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 90%;
+            width: 500px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #ff4d79;
+            margin-bottom: 40px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        #acceptBtn {
+            background-color: #ff4d79;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(255, 77, 121, 0.4);
+        }
+
+        #acceptBtn:before {
+            content: "♥";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #acceptBtn:hover {
+            transform: scale(1.05);
+            background-color: #ff3366;
+        }
+
+        #rejectBtn {
+            background-color: #8e8e8e;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(142, 142, 142, 0.4);
+        }
+
+        #rejectBtn:hover {
+            background-color: #777777;
+        }
+
+        #pleading {
+            color: #ff4d79;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            min-height: 60px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        .petal,
+        .star,
+        .heart {
+            position: absolute;
+            top: -20px;
+            pointer-events: none;
+            animation-name: fall;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        .petal {
+            width: 15px;
+            height: 15px;
+            background-color: #ffb6c1;
+            border-radius: 15px 0;
+            transform: rotate(45deg);
+        }
+
+        .star {
+            width: 0;
+            height: 0;
+            border-right: 10px solid transparent;
+            border-bottom: 7px solid #ffdf00;
+            border-left: 10px solid transparent;
+            transform: rotate(35deg);
+            position: relative;
+        }
+
+        .star:before {
+            border-bottom: 8px solid #ffdf00;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+            position: absolute;
+            height: 0;
+            width: 0;
+            top: -5px;
+            left: -6px;
+            transform: rotate(-35deg);
+            content: '';
+        }
+
+        .star:after {
+            position: absolute;
+            top: 0;
+            left: -10px;
+            border-right: 10px solid transparent;
+            border-bottom: 7px solid #ffdf00;
+            border-left: 10px solid transparent;
+            transform: rotate(-70deg);
+            content: '';
+        }
+
+        .heart {
+            width: 20px;
+            height: 20px;
+            background-color: #ff4d79;
+            transform: rotate(45deg);
+            position: relative;
+        }
+
+        .heart:before,
+        .heart:after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: #ff4d79;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .heart:before {
+            top: -10px;
+            left: 0;
+        }
+
+        .heart:after {
+            top: 0;
+            left: -10px;
+        }
+
+        #successMessage {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #successMessage h2 {
+            color: #ff4d79;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        #successMessage p {
+            color: #555;
+            font-size: 1.3rem;
+            max-width: 80%;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0);
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #acceptBtn,
+            #rejectBtn {
+                width: 80%;
+                margin: 5px 0;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 30px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                max-width: 95%;
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            #acceptBtn,
+            #rejectBtn {
+                width: 80%;
+                padding: 12px 20px;
+                font-size: 1.1rem;
+                margin: 5px 0;
+            }
+
+            #pleading {
+                font-size: 1rem;
+                min-height: 50px;
+            }
+
+            #successMessage h2 {
+                font-size: 2rem;
+            }
+
+            #successMessage p {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>你可以做我女朋友吗？</h1>
+        <div class="buttons">
+            <button id="acceptBtn">我愿意</button>
+            <button id="rejectBtn">不同意</button>
+        </div>
+        <div id="pleading"></div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <div id="successMessage">
+        <h2>❤️ 太棒了！我们在一起啦！❤️</h2>
+        <p>感谢你接受我的心意，这将是我们美好故事的开始。</p>
+    </div>
+
+    <script>
+        const rejectBtn = document.getElementById('rejectBtn');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const pleadingEl = document.getElementById('pleading');
+        const celebrationEl = document.getElementById('celebration');
+        const successMessageEl = document.getElementById('successMessage');
+
+        // 哀求话语数组
+        const pleadings = [
+            "再给我一次机会好不好？",
+            "不要这么快拒绝我呀~",
+            "你再好好想想嘛！",
+            "是不是我表达的方式不对？",
+            "你的心真的这么狠吗？",
+            "不要拒绝这份真挚的爱意~",
+            "我保证会好好对你的！",
+            "你确定你不再考虑一下吗？",
+            "眼睛闭上再睁开，重新选择一次吧！",
+            "难道我不够优秀吗？"
+        ];
+
+        // 记录拒绝次数
+        let rejectCount = 0;
+        // 按钮点击状态标记
+        let acceptClicked = false;
+
+        // 点击不同意按钮
+        rejectBtn.addEventListener('click', function () {
+            // 如果"我愿意"已经被点击过，不执行任何操作
+            if (acceptClicked) return;
+            rejectCount++;
+
+            // 随机选择一条哀求话语
+            const randomIndex = Math.floor(Math.random() * pleadings.length);
+            pleadingEl.textContent = pleadings[randomIndex];
+            pleadingEl.style.opacity = 1;
+
+            // 每拒绝一次，不同意按钮变小一点
+            if (rejectCount <= 1) {
+                const currentSize = 1 - (rejectCount * 0.1);
+                rejectBtn.style.transform = `scale(${currentSize})`;
+
+                // 同意按钮变大一点
+                acceptBtn.style.transform = `scale(${1 + (rejectCount * 0.1)})`;
+            }
+
+            // 如果拒绝超过2次，不同意按钮会开始移动
+            if (rejectCount > 1) {
+                rejectBtn.style.position = 'relative';
+                const randomX = Math.floor(Math.random() * 100) - 50;
+                const randomY = Math.floor(Math.random() * 100) - 50;
+                rejectBtn.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.5)`;
+            }
+        });
+
+        // 点击同意按钮
+        acceptBtn.addEventListener('click', function () {
+            // 检查按钮是否已被点击过
+            if (acceptClicked) return;
+
+            // 设置按钮已点击标记
+            acceptClicked = true;
+
+            // 禁用两个按钮
+            acceptBtn.disabled = true;
+            rejectBtn.disabled = true;
+
+            // 修改按钮样式表明已选择
+            acceptBtn.style.backgroundColor = '#ff8fa3';
+            acceptBtn.textContent = '已接受 ❤️';
+            rejectBtn.style.opacity = '0.5';
+
+            // 显示庆祝动画
+            celebrationEl.style.display = 'block';
+
+            // 创建粒子效果
+            for (let i = 0; i < 50; i++) {
+                createParticle(i % 3);
+            }
+
+            // 播放欢快音乐（如果需要可以取消注释）
+            const audio = new Audio('celebration.mp3');
+            audio.play().catch(error => {
+                console.error("音乐播放失败：", error);
+            })
+
+            // 3秒后显示成功信息
+            setTimeout(() => {
+                successMessageEl.style.display = 'flex';
+            }, 1000);
+        });
+
+        // 创建粒子函数
+        function createParticle(type) {
+            let particle;
+
+            if (type === 0) {
+                particle = document.createElement('div');
+                particle.className = 'petal';
+                particle.style.backgroundColor = getRandomColor(["#ffb6c1", "#ff69b4", "#ffcce6", "#ff91a4"]);
+            } else if (type === 1) {
+                particle = document.createElement('div');
+                particle.className = 'star';
+                particle.style.borderBottomColor = getRandomColor(["#ffdf00", "#ffd700", "#fff44f"]);
+            } else {
+                particle = document.createElement('div');
+                particle.className = 'heart';
+                const randomHeartColor = getRandomColor(["#ff4d79", "#ff3366", "#ff6b8b"]);
+                // 设置 CSS 变量
+                particle.style.setProperty('--heart-color', randomHeartColor);
+                particle.style.backgroundColor = randomHeartColor;
+            }
+
+            // 随机定位
+            particle.style.left = Math.random() * 100 + 'vw';
+            // 动画持续时间
+            const duration = Math.random() * 3 + 2; // 2-5秒
+            particle.style.animationDuration = duration + 's';
+            // 动画延迟
+            particle.style.animationDelay = Math.random() * 0.5 + 's';
+
+            celebrationEl.appendChild(particle);
+
+            // 动画结束后移除元素
+            setTimeout(() => {
+                if (particle.parentNode === celebrationEl) {
+                    celebrationEl.removeChild(particle);
+                }
+            }, (duration + 0.5) * 1000);
+        }
+
+        // 获取随机颜色
+        function getRandomColor(colors) {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+
+</html>

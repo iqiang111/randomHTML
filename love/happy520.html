@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>曹明婷宝宝520快乐</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fce4ec; /* 淡粉色背景 */
+        }
+
+        .heart {
+            font-size: 10em;
+            color: #e91e63; /* 红色爱心 */
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .heart:hover {
+            transform: scale(1.1);
+        }
+
+        #message {
+            font-size: 2em;
+            color: #e91e63;
+            margin-top: 20px;
+            text-align: center;
+            /* 添加动画效果 */
+            animation: fadeInOut 1s ease-in-out;
+        }
+
+        /* 定义淡入淡出动画 */
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="heart" onclick="showMessage()">💖</div>
+    <div id="message"></div>
+
+    <script>
+        function showMessage() {
+            // 添加更多亲昵词语
+            const messages = [
+                '爱你宝宝', 
+                '好想你宝宝', 
+                '想你', 
+                '宝宝最美啦', 
+                '超级爱你', 
+                '永远爱你', 
+                '宝宝好甜', 
+                '好喜欢你呀'
+            ];
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = messages[randomIndex];
+        }
+    </script>
+</body>
+</html>

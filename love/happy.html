@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天是美好的一天！</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Use min-height for better mobile support */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
+            text-align: center;
+            /* Default text alignment for mobile */
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            /* Reduced padding for smaller screens */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            /* Ensure it fits smaller screens */
+            width: auto;
+            transition: transform 0.3s;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: #2193b0;
+            margin-bottom: 15px;
+            /* Reduced margin */
+            font-size: 1.5em;
+            /* Responsive font size */
+        }
+
+        .message {
+            font-size: 16px;
+            /* Adjusted font size */
+            color: #333;
+            margin: 15px 0;
+            /* Adjusted margin */
+            line-height: 1.4;
+            /* Adjusted line height */
+        }
+
+        .emoji {
+            font-size: 40px;
+            /* Adjusted emoji size */
+            margin: 10px 0;
+            /* Adjusted margin */
+            animation: bounce 2s infinite;
+        }
+
+        .button {
+            background-color: #2193b0;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            /* Adjusted padding */
+            font-size: 16px;
+            /* Adjusted font size */
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 15px;
+            /* Adjusted margin */
+            outline: none;
+        }
+
+        .button:hover {
+            background-color: #1a7a8c;
+            transform: scale(1.05);
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .hearts {
+            position: fixed;
+            /* Changed to fixed */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            /* Ensure hearts are above other content */
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: float 6s linear infinite;
+            opacity: 0;
+            z-index: 11;
+            /* Ensure hearts are above the .hearts container */
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-10vh) translateX(calc(20vw * var(--direction)));
+                opacity: 0;
+            }
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.2em;
+            }
+
+            .message {
+                font-size: 14px;
+            }
+
+            .emoji {
+                font-size: 30px;
+            }
+
+            .button {
+                font-size: 14px;
+                padding: 8px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hearts" id="hearts"></div>
+    <div class="container">
+        <h1>今天是属于曹明婷的精彩一天！</h1>
+        <div class="emoji">🌟</div>
+        <div class="message">
+            微笑是最美丽的语言，希望它能一直伴随你左右。
+            记住，每一个新的一天都是一份礼物，充满着无限可能！
+        </div>
+        <div class="emoji">😊</div>
+        <button class="button" id="happyButton">点击获取快乐</button>
+    </div>
+
+    <script>
+        const happyMessages = [
+            "你的微笑可以点亮整个世界！",
+            "今天的你特别闪耀，继续保持！",
+            "成功不是终点，而是一个旅程，享受每一步！",
+            "没有人能够阻挡一个积极向上的你！",
+            "小小的善举可以创造大大的快乐！",
+            "勇敢做自己，这个世界需要你的独特！",
+            "每一次呼吸都是生命给予的礼物！",
+            "你比想象中更坚强、更勇敢！",
+            "相信自己，你能做到任何你想做的事情！",
+            "每一天都是新的开始，充满无限可能！",
+            "你的善良和温柔，让周围的人都感到温暖！",
+            "保持好奇心，探索未知的世界！",
+            "即使遇到困难，也要相信风雨过后会有彩虹！",
+            "感谢生活中的美好，它们无处不在！",
+            "你的存在本身就是一种美好！",
+            "学会爱自己，才能更好地爱别人！",
+            "你散发的光芒，照亮了我的世界！",
+            "每天进步一点点，积少成多，终将成就非凡！",
+            "你的努力和付出，终将得到回报！",
+            "保持乐观的心态，你会发现生活处处是惊喜！",
+            "记得给自己一个大大的拥抱，你值得被爱！",
+            "生活就像调色盘，你可以创造出属于自己的色彩！",
+            "你的独特之处，是这个世界最需要的！",
+            "每一个小小的成就，都值得庆祝和骄傲！",
+            "勇敢地追逐梦想，不要害怕失败！",
+            "微笑是最好的化妆品，让每一天都充满自信！",
+            "你的积极能量，感染了身边每一个人！",
+            "相信明天会更好，因为你一直在努力！",
+            "你是最棒的，永远不要怀疑自己！",
+            "感谢你出现在我的生命中，带给我快乐和美好！"
+        ];
+
+
+        const emojis = ["😊", "🌈", "✨", "🌞", "🎉", "🥳", "💪", "🌻", "🦋", "🎵"];
+
+        const happyButton = document.getElementById("happyButton");
+        const messageElement = document.querySelector(".message");
+        const emojiElements = document.querySelectorAll(".emoji");
+        const heartsContainer = document.getElementById("hearts");
+
+        happyButton.addEventListener("click", () => {
+            // 更换消息
+            const randomMessage = happyMessages[Math.floor(Math.random() * happyMessages.length)];
+            messageElement.textContent = randomMessage;
+
+            // 更换表情
+            emojiElements.forEach(element => {
+                element.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            });
+
+            // 创建飘浮的心形
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    createHeart();
+                }, i * 100);
+            }
+
+            // 按钮效果
+            happyButton.textContent = "感受到快乐了吗？";
+            setTimeout(() => {
+                happyButton.textContent = "点击获取快乐";
+            }, 2000);
+        });
+
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.className = "heart";
+            heart.textContent = ["❤️", "💕", "💖", "💗", "💓"][Math.floor(Math.random() * 5)];
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.setProperty("--direction", Math.random() > 0.5 ? 1 : -1);
+            heart.style.animationDuration = (5 + Math.random() * 5) + "s";
+            heartsContainer.appendChild(heart);
+
+            // 动画结束后移除元素
+            setTimeout(() => {
+                heart.remove();
+            }, 10000);
+        }
+
+        // 页面加载时创建一些初始的心形
+        window.onload = () => {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    createHeart();
+                }, i * 300);
+            }
+        };
+    </script>
+</body>
+
+</html>

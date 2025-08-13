@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>苏联政治冷笑话生成器</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Courier New", Courier, monospace;
+      background: linear-gradient(to bottom, #8B0000, #2F0000);
+      color: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: #FFD700;
+      text-shadow: 2px 2px 5px black;
+      text-align: center;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      border-radius: 15px;
+      border: 3px solid #FFD700;
+      width: 85%;
+      max-width: 700px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+
+    #joke {
+      font-size: 1.3em;
+      margin-bottom: 25px;
+      min-height: 80px;
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    button {
+      background-color: #FFD700;
+      border: none;
+      color: #8B0000;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #FFA500;
+      transform: scale(1.05);
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+
+    .hammer-sickle {
+      font-size: 2em;
+      color: #FFD700;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hammer-sickle">☭</div>
+  <h1>苏联政治冷笑话生成器</h1>
+
+  <div class="container">
+    <div id="joke">点击下方按钮获取政治幽默。同志们，准备好了吗？</div>
+    <button onclick="generateJoke()">获取政治冷笑话</button>
+  </div>
+
+  <footer>&copy; 2025 克里姆林宫幽默部</footer>
+
+  <script>
+    const jokes = [
+      "问：共产主义和资本主义的区别是什么？答：在资本主义制度下，人剥削人；在共产主义制度下，情况正好相反。",
+      "问：为什么苏联的选举投票率总是99.9%？答：因为剩下的0.1%在西伯利亚度假。",
+      "勃列日涅夫在演讲：'同志们，我有好消息和坏消息。好消息是我们的五年计划提前完成了。坏消息是我们现在没有土豆吃了。'",
+      "问：什么是苏联式民主？答：两只狼和一只羊投票决定晚餐吃什么，但是羊不知道自己在投票。",
+      "一个美国人、一个法国人和一个苏联人在讨论自由。美国人说：'我可以在白宫门前大喊里根是笨蛋！'法国人说：'我也可以在爱丽舍宫门前大喊密特朗是笨蛋！'苏联人说：'这有什么，我也可以在红场大喊里根是笨蛋！'",
+      "问：苏联的报纸《真理报》和《消息报》有什么区别？答：《真理报》里没有消息，《消息报》里没有真理。",
+      "斯大林、赫鲁晓夫和勃列日涅夫坐火车。火车停了，斯大林说：'枪毙司机！'火车还是不动。赫鲁晓夫说：'给司机平反！'火车还是不动。勃列日涅夫说：'同志们，我们拉上窗帘，假装火车在开就行了。'",
+      "问：为什么苏联人排队买面包时总是很安静？答：因为墙有耳朵。",
+      "一个苏联公民申请出国旅游，官员问：'你为什么要出国？'他回答：'我想看看资本主义的腐朽。'官员说：'那你为什么要回来？'他说：'我想看看社会主义的优越性。'",
+      "问：苏联和美国的新闻有什么区别？答：在美国，狗咬人不是新闻，人咬狗才是新闻；在苏联，狗咬人和人咬狗都不是新闻，只有党说是新闻才是新闻。",
+      "克里姆林宫里，勃列日涅夫对助手说：'给我找个笑话。'助手说：'政治笑话还是普通笑话？'勃列日涅夫说：'政治笑话。'助手说：'那要判几年？'",
+      "问：苏联的计划经济有什么好处？答：它消除了经济危机的不确定性——现在危机是永久性的。"
+    ];
+
+    function generateJoke() {
+      const jokeBox = document.getElementById("joke");
+      const randomIndex = Math.floor(Math.random() * jokes.length);
+      jokeBox.textContent = jokes[randomIndex];
+    }
+  </script>
+
+</body>
+</html>

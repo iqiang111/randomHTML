@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>美好回忆画廊</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: #e91e63;
+        }
+
+        header {
+            background-color: #f48fb1;
+            color: white;
+            padding: 20px 0;
+            font-size: 2em;
+            font-weight: bold;
+            border-bottom: 5px solid #f06292;
+        }
+
+        .gallery-container {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .gallery-item {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* 新增样式，让占满整行的图片项生效 */
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 600px) {
+            .gallery-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>美好回忆画廊</header>
+    <div class="gallery-container">
+        <!-- 添加 full-width 类名 -->
+        <div class="gallery-item full-width">
+            <img src="img/IMG_8930(20250514-213907).JPG" alt="赶快毕业">
+        </div>
+        <div class="gallery-item">
+            <img src="img/IMG_3512.JPG" alt="落日余晖">
+        </div>
+        <div class="gallery-item">
+            <img src="img/IMG_8073.JPG" alt="下次还去宜家">
+        </div>
+        <div class="gallery-item">
+            <img src="img/IMG_8083.JPG" alt="美女生气">
+        </div>
+        <div class="gallery-item">
+            <img src="img/IMG_8095.JPG" alt="美女下楼">
+        </div>
+        <div class="gallery-item">
+            <img src="img/IMG_9051.JPG" alt="一起看日出☀">
+        </div>
+        <div class="gallery-item">
+            <img src="img/IMG_9077.JPG" alt="真好看">
+        </div>
+        <!-- 可按需添加更多图片项 -->
+    </div>
+</body>
+
+</html>

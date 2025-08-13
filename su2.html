@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>苏联式冷笑话生成器</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Courier New", Courier, monospace;
+      background: linear-gradient(to bottom, #2e2e2e, #1a1a1a);
+      color: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: #ff3c38;
+      text-shadow: 2px 2px 5px black;
+    }
+
+    .container {
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      border-radius: 15px;
+      border: 2px solid #ff3c38;
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    #joke {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      min-height: 60px;
+    }
+
+    button {
+      background-color: #ff3c38;
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #e32c2c;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>苏联式冷笑话生成器</h1>
+
+  <div class="container">
+    <div id="joke">点击下方按钮获取苏联式幽默。</div>
+    <button onclick="generateJoke()">获取冷笑话</button>
+  </div>
+
+  <footer>&copy; 2025 苏联幽默研究所</footer>
+
+  <script>
+    const jokes = [
+      "在苏联，你不找工作，工作找你。",
+      "在资本主义国家，有犯罪之后才有惩罚；在苏联，有惩罚就一定有犯罪。",
+      "问：为什么苏联车有两个油箱？答：一个放汽油，一个放希望。",
+      "在苏联，电视看你。",
+      "问：苏联的笑话都怎么来的？答：人民生活出来的。",
+      "在苏联，审查员删除你的笑话前，他们会先把它笑一遍。",
+      "问：什么是集体农庄？答：你假装工作，政府假装付钱。",
+      "在苏联，未来是确定的，过去是不断被修改的。",
+      "问：什么是幸福？答：能在凌晨三点听到敲门声，不是来抓你的。",
+      "在苏联，你排队排了十年，最后才知道你排的是鞋带。"
+    ];
+
+    function generateJoke() {
+      const jokeBox = document.getElementById("joke");
+      const randomIndex = Math.floor(Math.random() * jokes.length);
+      jokeBox.textContent = jokes[randomIndex];
+    }
+  </script>
+
+</body>
+</html>

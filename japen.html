@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合肥 - 日本关西秋日浪漫之旅</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta1/css/all.min.css"
+        integrity="sha512-FVhPqD9yXF+iF2pA+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H+d+Lz+b+Gz+y+j+b+H"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Claude Sans';
+            src: url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+            /* Fallback/example, as Claude Sans exact CDN might not be widely available, usually it's a proprietary font. Replace with actual if available */
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        body {
+            font-family: 'Claude Sans', 'Roboto', sans-serif;
+            -webkit-print-color-adjust: exact !important;
+            /* Forces printing of background colors and images */
+            print-color-adjust: exact !important;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            margin: 0 auto;
+            border: 1px dotted #ccc;
+            /* Optional: Dotted cutting line */
+            box-sizing: border-box;
+            background: #ffffff;
+            color: #333333;
+            display: flex;
+            flex-direction: column;
+            page-break-after: always;
+            /* Ensure new page for each 'page' div */
+        }
+
+        .page:last-child {
+            page-break-after: auto;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: none;
+            }
+
+            .page {
+                border: none;
+                margin: 0;
+                padding: 10mm;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* High contrast for print */
+        h1,
+        h2,
+        h3,
+        h4,
+        strong {
+            color: #1a202c;
+            /* Darker text for headings */
+        }
+
+        .text-primary {
+            color: #2c5282;
+            /* A strong blue for emphasis */
+        }
+
+        .border-primary {
+            border-color: #2c5282;
+        }
+
+        .bg-light-gray {
+            background-color: #f7fafc;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-4">
+
+    <div class="page shadow-lg">
+        <!-- Itinerary Title Section -->
+        <header class="text-center mb-8 fade-in-up">
+            <h1 class="text-4xl font-bold text-primary mb-2">
+                <i class="fas fa-plane-departure mr-2"></i>合肥 → 日本关西秋日浪漫之旅
+            </h1>
+            <p class="text-lg text-gray-700">旅行日期：2025年11月 · 4天3晚</p>
+            <p class="text-md text-gray-600">旅行者：[贾国强] & [曹明婷]</p>
+            <p class="text-md text-gray-500 mt-2">预估天气：凉爽，适宜观赏枫叶</p>
+            <hr class="my-4 border-gray-300">
+        </header>
+
+        <!-- Itinerary Overview Section -->
+        <section class="mb-8 fade-in-up">
+            <h2 class="text-2xl font-semibold mb-4 text-primary"><i class="fas fa-list-alt mr-2"></i>行程概览</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i>Day 1:
+                        抵达大阪</h3>
+                    <p class="text-gray-700">合肥直飞大阪，心斋桥/道顿堀美食与夜景</p>
+                </div>
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-leaf text-green-600 mr-2"></i>Day 2: 京都秋色</h3>
+                    <p class="text-gray-700">清水寺 & 岚山枫叶，感受古都风韵</p>
+                </div>
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-city text-blue-500 mr-2"></i>Day 3: 大阪都市风情</h3>
+                    <p class="text-gray-700">大阪城，梅田蓝天大厦，购物/文化体验</p>
+                </div>
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-plane-arrival text-purple-500 mr-2"></i>Day 4:
+                        返程</h3>
+                    <p class="text-gray-700">大阪购物/补给，返回合肥</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Daily Schedule -->
+        <section class="mb-8 flex-grow fade-in-up">
+            <h2 class="text-2xl font-semibold mb-4 text-primary"><i class="fas fa-clock mr-2"></i>详细时间表</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">时间</th>
+                            <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">活动</th>
+                            <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">地点</th>
+                            <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-700">详情 & 备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Day 1 -->
+                        <tr class="bg-blue-50 text-blue-800">
+                            <td colspan="4" class="py-2 px-4 font-bold">Day 1: 2024年11月XX日 - 抵达大阪</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">上午</td>
+                            <td class="py-2 px-4 border-b border-gray-200">合肥直飞大阪</td>
+                            <td class="py-2 px-4 border-b border-gray-200">合肥新桥机场 (HFE) → 大阪关西机场 (KIX)</td>
+                            <td class="py-2 px-4 border-b border-gray-200">参考航班：春秋航空9C8506 [1]；办理入境手续，购买ICOCA卡</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">下午</td>
+                            <td class="py-2 px-4 border-b border-gray-200">前往市区，酒店入住</td>
+                            <td class="py-2 px-4 border-b border-gray-200">关西机场 → 难波/梅田</td>
+                            <td class="py-2 px-4 border-b border-gray-200">JR关空快速或南海电铁；放下行李稍作休息</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">傍晚/夜晚</td>
+                            <td class="py-2 px-4 border-b border-gray-200">心斋桥与道顿堀</td>
+                            <td class="py-2 px-4 border-b border-gray-200">大阪心斋桥/道顿堀</td>
+                            <td class="py-2 px-4 border-b border-gray-200">感受繁华夜市，品尝章鱼小丸子、大阪烧、串炸等 [2]</td>
+                        </tr>
+
+                        <!-- Day 2 -->
+                        <tr class="bg-green-50 text-green-800">
+                            <td colspan="4" class="py-2 px-4 font-bold">Day 2: 2024年11月XX日 - 京都秋色巡礼</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">上午</td>
+                            <td class="py-2 px-4 border-b border-gray-200">前往京都，清水寺</td>
+                            <td class="py-2 px-4 border-b border-gray-200">大阪 → 京都，清水寺</td>
+                            <td class="py-2 px-4 border-b border-gray-200">JR京都线；门票约400日元起；步行游览二年坂、三年坂</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">下午</td>
+                            <td class="py-2 px-4 border-b border-gray-200">岚山竹林 & 渡月桥</td>
+                            <td class="py-2 px-4 border-b border-gray-200">岚山风景区</td>
+                            <td class="py-2 px-4 border-b border-gray-200">秋叶观赏，尝试岚山小火车 (需提前预订) 或租借和服体验</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">夜晚</td>
+                            <td class="py-2 px-4 border-b border-gray-200">清水寺夜间点灯</td>
+                            <td class="py-2 px-4 border-b border-gray-200">清水寺</td>
+                            <td class="py-2 px-4 border-b border-gray-200">如遇活动期间，切勿错过夜枫美景 [3]</td>
+                        </tr>
+
+                        <!-- Day 3 -->
+                        <tr class="bg-purple-50 text-purple-800">
+                            <td colspan="4" class="py-2 px-4 font-bold">Day 3: 2024年11月XX日 - 大阪都市风情</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">上午</td>
+                            <td class="py-2 px-4 border-b border-gray-200">大阪城公园</td>
+                            <td class="py-2 px-4 border-b border-gray-200">大阪城</td>
+                            <td class="py-2 px-4 border-b border-gray-200">天守阁门票约600日元起，了解大阪历史 [2]</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">下午</td>
+                            <td class="py-2 px-4 border-b border-gray-200">梅田蓝天大厦 & 购物</td>
+                            <td class="py-2 px-4 border-b border-gray-200">大阪梅田</td>
+                            <td class="py-2 px-4 border-b border-gray-200">空中庭园展望台俯瞰城市，阪急百货等购物区</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">夜晚</td>
+                            <td class="py-2 px-4 border-b border-gray-200">晚餐与休闲</td>
+                            <td class="py-2 px-4 border-b border-gray-200">道顿堀或当地居酒屋</td>
+                            <td class="py-2 px-4 border-b border-gray-200">探索特色美食，体验日本夜生活</td>
+                        </tr>
+
+                        <!-- Day 4 -->
+                        <tr class="bg-yellow-50 text-yellow-800">
+                            <td colspan="4" class="py-2 px-4 font-bold">Day 4: 2024年11月XX日 - 返程</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">上午</td>
+                            <td class="py-2 px-4 border-b border-gray-200">自由活动/购物补给</td>
+                            <td class="py-2 px-4 border-b border-gray-200">市区或机场周边</td>
+                            <td class="py-2 px-4 border-b border-gray-200">购买手信，品尝最后的美食</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">下午</td>
+                            <td class="py-2 px-4 border-b border-gray-200">前往机场，搭机返程</td>
+                            <td class="py-2 px-4 border-b border-gray-200">大阪关西机场 (KIX) → 合肥新桥机场 (HFE)</td>
+                            <td class="py-2 px-4 border-b border-gray-200">提前2-3小时抵达机场办理登机手续</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="page shadow-lg">
+        <!-- Transportation Information Section -->
+        <section class="mb-8 fade-in-up">
+            <h2 class="text-2xl font-semibold mb-4 text-primary"><i class="fas fa-route mr-2"></i>交通信息</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-plane text-pink-500 mr-2"></i>国际航班</h3>
+                    <p class="text-gray-700">合肥 (HFE) - 大阪 (KIX)：春秋航空 (9C8506) 有直飞航班，建议提前关注机票价格，选择淡季出行会更省钱 [1][2]。</p>
+                </div>
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-train text-orange-500 mr-2"></i>日本境内交通</h3>
+                    <p class="text-gray-700">
+                        主要方式：JR铁路、地铁、公交车 [2][12]。<br>
+                        推荐：购买 ICOCA卡 (或Suica/Pasmo) 充值使用，方便快捷，适用于大部分城际和市內交通，但高速列车和长途列车不包括 [12]。
+                        城际交通 (大阪-京都)：搭乘JR京都线快速列车，车程约30分钟，使用ICOCA卡刷卡进出 [12]。
+                    </p>
+                </div>
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200 col-span-2">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-map-marked-alt text-teal-500 mr-2"></i>路线规划工具
+                    </h3>
+                    <p class="text-gray-700">
+                        行程规划 (概念性)：您可以使用高德地图APP的“DIY地图”功能 [7][8][9] 来标记您想去的景点，并使用“顺路规划” [5][8] 串联起来，形成初步的游览路线概念图。
+                        实际导航 (推荐)：在日本境内，强烈建议使用Google Maps (谷歌地图) 或 “日本换乘 (乗換案内)” APP [6][12]
+                        进行实时导航和公共交通查询，它们的日本本地数据和精准度更优 [6]。高德地图在日本的导航支持相对有限 [6]。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Accommodation & Dining Section -->
+        <section class="mb-8 fade-in-up">
+            <h2 class="text-2xl font-semibold mb-4 text-primary"><i class="fas fa-hotel mr-2"></i>住宿与餐饮</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-bed text-purple-500 mr-2"></i>住宿推荐 (<span
+                            class="text-sm font-normal">宿城</span>)</h3>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li>大阪：建议选择交通便利的区域，如难波、梅田或心斋桥附近，经济型酒店或民宿为佳，价格相对适中 [2]。</li>
+                        <li>京都：住宿费用可能略高，建议选择JR京都站、四条河原町附近，交通便利。</li>
+                        <li>预订：旺季 (11月为赏枫旺季) 酒店房间易满，务必提前通过Booking.com, Agoda 或携程等平台预订 [2]。</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-utensils text-red-500 mr-2"></i>餐饮推荐 (<span
+                            class="text-sm font-normal">食</span>)</h3>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li>大阪：“美食天堂”，必尝：章鱼小丸子、大阪烧、串炸、拉面等 [2]。</li>
+                        <li>京都：传统精致的京料理、抹茶甜点、汤豆腐、怀石料理 [2]。</li>
+                        <li>节省开支：多利用超市和便利店 (如7-11, Lawson, FamilyMart) 购买便当、饭团、寿司和当季水果，价格实惠且美味
+                            [2][4]。11月是品尝螃蟹、牡蛎、柿子和苹果的好季节 [4]。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="page shadow-lg">
+        <!-- Practical Information Section -->
+        <section class="mb-8 flex-grow fade-in-up">
+            <h2 class="text-2xl font-semibold mb-4 text-primary"><i class="fas fa-info-circle mr-2"></i>实用信息</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-hands-helping text-blue-500 mr-2"></i>紧急联系方式
+                    </h3>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li>大使馆：中国驻大阪总领事馆电话：(06) 6445-9486</li>
+                        <li>旅游咨询：日本国内可拨打12301（上海旅游咨询）</li>
+                        <li>紧急求助：警察 110 / 急救 120 (根据日本当地紧急电话调整)</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>注意事项
+                    </h3>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li>礼仪：日本人注重礼仪，在公共场合保持安静，尊重当地习俗与文化 [2]。</li>
+                        <li>交通：巴士后门上车，前门下车，下车需按铃 [13]。日本交通费用较高，合理利用交通卡 [13]。</li>
+                        <li>现金：建议携带一定现金，部分小店可能不接受信用卡 [2]。</li>
+                        <li>垃圾：日本垃圾分类严格，请按规定投放 [2]。</li>
+                        <li>语言：可准备翻译APP或纸质词典 [2]。</li>
+                    </ul>
+                </div>
+                <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200 col-span-2">
+                    <h3 class="font-bold text-lg mb-2"><i class="fas fa-suitcase-rolling text-green-500 mr-2"></i>行李清单提醒
+                    </h3>
+                    <ul class="list-disc list-inside text-gray-700">
+                        <li>证件：护照原件及日本签证 [1][2]、机票/酒店预订单、旅游保险。</li>
+                        <li>衣物：11月气候宜人但早晚温差大，请带轻便夹克、长袖衣物、保暖内搭，以备不时之需 [4]。</li>
+                        <li>用品：常用药品、防晒霜、太阳镜、转换插头、充电宝、个人洗漱用品。</li>
+                        <li>其他：舒适的步行鞋、轻便雨具（例如雨伞或防水外套） [4]。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Budget Summary (Chart visualization placeholder) -->
+        <section class="mb-8 fade-in-up">
+            <h2 class="text-2xl font-semibold mb-4 text-primary"><i class="fas fa-chart-pie mr-2"></i>预算细分概览</h2>
+            <div class="p-4 bg-light-gray rounded-lg shadow-md border border-gray-200">
+                <canvas id="budgetChart" width="400" height="200"></canvas>
+            </div>
+        </section>
+
+        <footer class="text-center text-gray-500 text-sm mt-auto no-print">
+            <p>旅行愉快！祝您和女朋友在日本度过一个难忘的秋日时光！</p>
+            <button onclick="window.print()"
+                class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                <i class="fas fa-print mr-2"></i>打印此规划表
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        // Intersection Observer for fade-in effect
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.fade-in-up');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, {
+                threshold: 0.1 // Adjust as needed
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+
+        // Chart.js for Budget Visualization
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            const budgetChart = new Chart(ctx, {
+                type: 'pie', // Or 'doughnut', 'bar' depending on preference
+                data: {
+                    labels: ['国际机票', '住宿', '城市交通', '餐饮', '景点门票', '购物/杂项'],
+                    datasets: [{
+                        data: [5500, 2000, 600, 1750, 750, 1400], // Example mid-range values from pre-calculated estimates
+                        backgroundColor: [
+                            '#4A90E2', // Blue for Flights
+                            '#8B5CF6', // Purple for Accommodation
+                            '#F59E0B', // Orange for Transport
+                            '#EF4444', // Red for Food
+                            '#10B981', // Green for Attractions
+                            '#EC4899'  // Pink for Shopping/Misc
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    family: 'Claude Sans, Roboto, sans-serif'
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '12000元预算概览 (示例值)',
+                            font: {
+                                size: 16,
+                                family: 'Claude Sans, Roboto, sans-serif'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

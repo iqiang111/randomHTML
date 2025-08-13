@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翰墨听音阁 - AI语音合成</title>
+    <style>
+        /* --- 引入在线字体 --- */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+
+        /* --- 全局与主题设定 --- */
+        :root {
+            --paper-bg: #f5f1e8; /* 宣纸背景色 */
+            --wood-panel-bg: #4a3c2d; /* 书案木板色 */
+            --text-color: #333; /* 主要文字颜色 */
+            --ink-color: #1a1a1a; /* 墨色 */
+            --seal-red: #a4242f; /* 朱砂印章红 */
+            --bronze-accent: #8c7853; /* 青铜/黄铜点缀色 */
+            --font-main: 'Noto Serif SC', serif;
+        }
+
+        /* --- 重置与基础样式 --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--paper-bg);
+            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23dcd6c8" fill-opacity="0.2"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); /* 细微纹理 */
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        /* --- 主容器布局 --- */
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            gap: 40px;
+            background: var(--wood-panel-bg);
+            border: 1px solid #c8bca9;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 0 10px var(--wood-panel-bg);
+            border-radius: 8px;
+            padding: 30px;
+        }
+
+        /* --- 左侧竖排标题 --- */
+        .title-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--paper-bg);
+            user-select: none;
+        }
+
+        .main-title {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 15px;
+            border-right: 2px solid var(--bronze-accent);
+            padding-right: 20px;
+            margin-bottom: 20px;
+        }
+
+        .seal {
+            width: 50px;
+            height: 50px;
+            background-color: var(--seal-red);
+            color: var(--paper-bg);
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            border: 3px solid #c97f8e;
+            border-radius: 4px;
+            font-family: 'KaiTi', 'STKaiti', serif; /* 楷体 for "AI" */
+        }
+        
+        /* --- 中间主操作区 --- */
+        .main-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h2 {
+            color: var(--paper-bg);
+            font-weight: 400;
+            border-bottom: 1px solid var(--bronze-accent);
+            padding-bottom: 10px;
+        }
+
+        .input-area {
+            position: relative;
+        }
+
+        #text-input {
+            width: 100%;
+            height: 180px;
+            padding: 15px;
+            font-family: var(--font-main);
+            font-size: 16px;
+            background-color: var(--paper-bg);
+            border: 2px solid var(--bronze-accent);
+            border-radius: 4px;
+            resize: vertical;
+            color: var(--ink-color);
+        }
+        #text-input:focus {
+            outline: none;
+            border-color: var(--seal-red);
+            box-shadow: 0 0 10px rgba(164, 36, 47, 0.3);
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #888;
+            background: rgba(245, 241, 232, 0.7);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        #lang-select {
+            padding: 10px;
+            font-family: var(--font-main);
+            font-size: 16px;
+            background-color: var(--paper-bg);
+            border: 1px solid var(--bronze-accent);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #generate-btn {
+            flex-grow: 1;
+            padding: 12px 20px;
+            font-family: var(--font-main);
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--paper-bg);
+            background-color: var(--ink-color);
+            border: 2px solid var(--bronze-accent);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        #generate-btn:before { /* 墨迹晕开效果 */
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(140, 120, 83, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+        #generate-btn:hover:not(:disabled) {
+            border-color: var(--seal-red);
+            color: #fff;
+        }
+        #generate-btn:hover:not(:disabled):before {
+            width: 250%;
+            height: 250%;
+        }
+        #generate-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            border-color: #777;
+        }
+
+        /* 加载动画 */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(245, 241, 232, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--paper-bg);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #result-area {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+            display: none; /* 默认隐藏 */
+        }
+        #audio-player {
+            width: 100%;
+        }
+        audio::-webkit-media-controls-panel {
+            background-color: var(--bronze-accent);
+        }
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-mute-button {
+            background-color: var(--seal-red);
+            border-radius: 50%;
+        }
+        
+        #download-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--paper-bg);
+            text-decoration: none;
+            padding: 8px 12px;
+            background-color: var(--seal-red);
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        #download-link:hover {
+            background-color: #c0392b;
+        }
+
+        /* --- 右侧历史记录 --- */
+        .history-panel {
+            flex: 1.2;
+            background: rgba(0,0,0,0.1);
+            border-left: 2px solid var(--bronze-accent);
+            padding: 0 20px 20px 20px;
+            max-height: 500px; /* 控制高度 */
+            overflow-y: auto;
+        }
+        .history-panel h2 {
+            position: sticky;
+            top: 0;
+            background: var(--wood-panel-bg); /* 使标题背景不透明 */
+            padding-top: 20px;
+            margin: 0 -20px; /* 撑满横向 */
+            padding-left: 20px;
+        }
+        
+        /* 美化滚动条 */
+        .history-panel::-webkit-scrollbar { width: 8px; }
+        .history-panel::-webkit-scrollbar-track { background: transparent; }
+        .history-panel::-webkit-scrollbar-thumb { background: var(--bronze-accent); border-radius: 4px;}
+        
+        #history-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+        
+        .history-item {
+            background-color: var(--paper-bg);
+            color: var(--ink-color);
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 5px solid var(--bronze-accent);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .history-item-text {
+            margin-bottom: 10px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 95%;
+        }
+
+        .history-item-controls button {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 5px 8px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-family: var(--font-main);
+        }
+        .history-item-controls button:hover {
+            background-color: #e0e0e0;
+            border-color: #aaa;
+        }
+        
+        #clear-history {
+            color: var(--paper-bg);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+            float: right;
+            margin-top: -28px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        #clear-history:hover {
+            opacity: 1;
+        }
+
+        /* --- 错误提示 --- */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--seal-red);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s, top 0.5s;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            top: 40px;
+        }
+
+        /* --- 响应式设计 --- */
+        @media (max-width: 992px) {
+            .app-container {
+                flex-direction: column;
+                box-shadow: none;
+                padding: 15px;
+            }
+            .title-panel {
+                flex-direction: row;
+                align-items: center;
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+            .main-title {
+                writing-mode: horizontal-tb;
+                border-right: none;
+                border-bottom: 2px solid var(--bronze-accent);
+                padding-right: 0;
+                padding-bottom: 10px;
+                letter-spacing: 5px;
+                font-size: 32px;
+            }
+            .history-panel {
+                max-height: 300px;
+            }
+        }
+        @media (max-width: 480px) {
+            body { padding: 0; }
+            .app-container { border-radius: 0; }
+            .main-title { font-size: 24px; }
+            .seal { width: 40px; height: 40px; font-size: 20px; }
+            .controls { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- 左侧: 竖排标题与印章 -->
+        <aside class="title-panel">
+            <h1 class="main-title">翰墨听音</h1>
+            <div class="seal">AI</div>
+        </aside>
+
+        <!-- 中间: 核心操作区 -->
+        <main class="main-panel">
+            <h2>创作区域</h2>
+            <div class="input-area">
+                <textarea id="text-input" placeholder="请在此处输入文字，如“明月几时有，把酒问青天”"></textarea>
+                <span id="char-counter" class="char-counter">0 字</span>
+            </div>
+            <div class="controls">
+                <select id="lang-select">
+                    <option value="zh">中文 (普通话)</option>
+                    <option value="en">英文 (English)</option>
+                    <!-- 未来可在此扩展更多语种 -->
+                </select>
+                <button id="generate-btn">
+                    <span class="btn-text">落笔听音</span>
+                </button>
+            </div>
+            <div id="result-area">
+                <audio id="audio-player" controls></audio>
+                <a id="download-link" href="#" download="output.wav">下载音频</a>
+            </div>
+        </main>
+
+        <!-- 右侧: 历史记录 -->
+        <aside class="history-panel">
+            <h2>
+                历史记录
+                <button id="clear-history" title="清空所有记录">清空</button>
+            </h2>
+            <ul id="history-list">
+                <!-- 历史记录将由JS动态生成 -->
+            </ul>
+        </aside>
+    </div>
+
+    <!-- 全局提示框 -->
+    <div id="toast" class="toast"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- 元素获取 ---
+    const textInput = document.getElementById('text-input');
+    const langSelect = document.getElementById('lang-select');
+    const generateBtn = document.getElementById('generate-btn');
+    const btnText = generateBtn.querySelector('.btn-text');
+    const charCounter = document.getElementById('char-counter');
+    const resultArea = document.getElementById('result-area');
+    const audioPlayer = document.getElementById('audio-player');
+    const downloadLink = document.getElementById('download-link');
+    const historyList = document.getElementById('history-list');
+    const clearHistoryBtn = document.getElementById('clear-history');
+    const toast = document.getElementById('toast');
+
+    // --- 全局变量 ---
+    const API_URL = "https://tts.gbase.ai/tts";
+    const API_REFERER = "https://gbase.ai/";
+    const HISTORY_KEY = "tts_history";
+    let history = [];
+    // 用于存储Blob URL，避免重复创建
+    let historyBlobUrls = new Map(); 
+
+    // --- 功能函数 ---
+
+    /**
+     * 显示全局提示
+     * @param {string} message - 提示信息
+     * @param {number} duration - 显示时长 (ms)
+     */
+    function showToast(message, duration = 3000) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, duration);
+    }
+
+    /**
+     * 更新字数统计
+     */
+    function updateCharCount() {
+        const count = textInput.value.length;
+        charCounter.textContent = `${count} 字`;
+    }
+
+    /**
+     * 设置按钮为加载状态
+     * @param {boolean} isLoading - 是否正在加载
+     */
+    function setUILoading(isLoading) {
+        if (isLoading) {
+            generateBtn.disabled = true;
+            btnText.innerHTML = '<span class="loader"></span>生成中...';
+        } else {
+            generateBtn.disabled = false;
+            btnText.textContent = '落笔听音';
+        }
+    }
+
+    /**
+     * 渲染历史记录列表
+     */
+    function renderHistory() {
+        historyList.innerHTML = '';
+        if (history.length === 0) {
+            historyList.innerHTML = '<li class="history-item" style="color:#aaa; border:none; background: transparent; text-align: center; font-style: italic;">暂无记录</li>';
+            clearHistoryBtn.style.display = 'none';
+            return;
+        }
+        
+        clearHistoryBtn.style.display = 'block';
+        history.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            li.dataset.id = item.id;
+
+            const textP = document.createElement('p');
+            textP.className = 'history-item-text';
+            textP.textContent = item.text;
+            textP.title = item.text;
+
+            const controlsDiv = document.createElement('div');
+            controlsDiv.className = 'history-item-controls';
+
+            const playBtn = document.createElement('button');
+            playBtn.textContent = '回听';
+            playBtn.onclick = () => playFromHistory(item.id);
+
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = '下载';
+            downloadBtn.onclick = () => downloadFromHistory(item.id);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = '删除';
+            deleteBtn.onclick = () => deleteFromHistory(item.id);
+
+            controlsDiv.append(playBtn, downloadBtn, deleteBtn);
+            li.append(textP, controlsDiv);
+            historyList.appendChild(li);
+        });
+    }
+
+    /**
+     * 从本地存储加载历史记录
+     */
+    function loadHistory() {
+        const storedHistory = localStorage.getItem(HISTORY_KEY);
+        if (storedHistory) {
+            history = JSON.parse(storedHistory);
+            renderHistory();
+        } else {
+            renderHistory();
+        }
+    }
+
+    /**
+     * 保存历史记录到本地存储
+     */
+    function saveHistory() {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+    
+    /**
+     * 添加一条新的历史记录
+     * @param {string} text 
+     * @param {string} lang 
+     * @param {Blob} blob 
+     */
+    async function addToHistory(text, lang, blob) {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = function() {
+            const base64data = reader.result;
+            const newItem = {
+                id: Date.now(),
+                text,
+                lang,
+                data: base64data
+            };
+            history.unshift(newItem); // 加到最前面
+            if (history.length > 20) { // 最多保存20条
+                history.pop();
+            }
+            saveHistory();
+            renderHistory();
+        }
+    }
+    
+    /**
+     * 将Base64数据转换为Blob
+     * @param {string} base64Data 
+     */
+    async function base64ToBlob(base64Data) {
+        const response = await fetch(base64Data);
+        return await response.blob();
+    }
+
+    /**
+     * 播放历史记录中的音频
+     * @param {number} id 
+     */
+    async function playFromHistory(id) {
+        const item = history.find(i => i.id === id);
+        if (!item) return;
+
+        showToast(`正在播放: ${item.text.substring(0, 10)}...`);
+        let audioUrl = historyBlobUrls.get(id);
+
+        if (!audioUrl) {
+            const blob = await base64ToBlob(item.data);
+            audioUrl = URL.createObjectURL(blob);
+            historyBlobUrls.set(id, audioUrl);
+        }
+        
+        audioPlayer.src = audioUrl;
+        audioPlayer.play();
+        resultArea.style.display = 'block';
+        downloadLink.style.display = 'none'; // 历史播放不显示主下载按钮
+    }
+    
+    /**
+     * 下载历史记录中的音频
+     * @param {number} id 
+     */
+    async function downloadFromHistory(id) {
+        const item = history.find(i => i.id === id);
+        if (!item) return;
+        
+        let audioUrl = historyBlobUrls.get(id);
+
+        if (!audioUrl) {
+            const blob = await base64ToBlob(item.data);
+            audioUrl = URL.createObjectURL(blob);
+            historyBlobUrls.set(id, audioUrl);
+        }
+
+        const tempLink = document.createElement('a');
+        tempLink.href = audioUrl;
+        tempLink.download = `${item.text.substring(0, 15).replace(/[\\\/:*?"<>|]/g, '') || 'audio'}.wav`;
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
+    }
+    
+    /**
+     * 删除一条历史记录
+     * @param {number} id 
+     */
+    function deleteFromHistory(id) {
+        history = history.filter(i => i.id !== id);
+        if(historyBlobUrls.has(id)){
+            URL.revokeObjectURL(historyBlobUrls.get(id));
+            historyBlobUrls.delete(id);
+        }
+        saveHistory();
+        renderHistory();
+    }
+
+    /**
+     * 清空所有历史记录
+     */
+    function clearHistory() {
+        if (confirm('确定要清空所有历史记录吗？此操作不可撤销。')) {
+            history = [];
+            historyBlobUrls.forEach(url => URL.revokeObjectURL(url));
+            historyBlobUrls.clear();
+            localStorage.removeItem(HISTORY_KEY);
+            renderHistory();
+            showToast('历史记录已清空');
+        }
+    }
+
+
+    /**
+     * 主函数：处理生成请求
+     */
+    async function handleGenerate() {
+        const text = textInput.value.trim();
+        const lang = langSelect.value;
+
+        if (!text) {
+            showToast('请输入一些文字。');
+            return;
+        }
+
+        setUILoading(true);
+        resultArea.style.display = 'none';
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Referer': API_REFERER
+                },
+                body: JSON.stringify({ text, lang })
+            });
+            
+            if (!response.ok) {
+                // 尝试解析错误信息
+                let errorMsg = `请求失败，状态码: ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    errorMsg = `错误: ${errorData.message || response.statusText}`;
+                } catch (e) { /* 忽略解析错误 */ }
+                throw new Error(errorMsg);
+            }
+
+            const audioBlob = await response.blob();
+
+            // 检查返回的是否真的是音频
+            if (audioBlob.type.startsWith('audio/')) {
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                audioPlayer.src = audioUrl;
+                audioPlayer.play();
+
+                downloadLink.href = audioUrl;
+                downloadLink.download = `${text.substring(0, 15).replace(/[\\\/:*?"<>|]/g, '') || 'audio'}.wav`;
+                downloadLink.style.display = 'inline-block';
+                resultArea.style.display = 'block';
+                
+                // 添加到历史记录
+                addToHistory(text, lang, audioBlob);
+
+            } else {
+                // 如果返回的不是音频，可能是API的错误信息
+                const errorText = await audioBlob.text();
+                throw new Error(`API返回格式错误: ${errorText}`);
+            }
+
+        } catch (error) {
+            console.error('TTS 生成失败:', error);
+            showToast(`生成失败: ${error.message}`);
+        } finally {
+            setUILoading(false);
+        }
+    }
+
+    // --- 事件绑定 ---
+    generateBtn.addEventListener('click', handleGenerate);
+    textInput.addEventListener('input', updateCharCount);
+    clearHistoryBtn.addEventListener('click', clearHistory);
+    // 支持按 Ctrl+Enter 快捷键生成
+    textInput.addEventListener('keydown', (e) => {
+        if(e.ctrlKey && e.key === 'Enter') {
+            handleGenerate();
+        }
+    });
+
+
+    // --- 初始化 ---
+    updateCharCount();
+    loadHistory();
+
+});
+</script>
+
+</body>
+</html>

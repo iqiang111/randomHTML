@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手部追踪画图应用</title>
+    <script src="camera_utils.js"></script>
+    <script src="control_utils.js"></script>
+    <script src="drawing_utils.js"></script>
+    <script src="hands.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #videoContainer {
+            position: relative;
+            flex: 1;
+            background: #000;
+        }
+
+        #videoElement {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        #canvasElement {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            z-index: 10;
+            transform: scaleX(-1);
+        }
+
+        #drawingCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        #toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        #toolbar:hover {
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 0 10px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .tool-group:last-child {
+            border-right: none;
+        }
+
+        .tool-label {
+            font-size: 14px;
+            color: #666;
+            margin-right: 5px;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-picker:hover {
+            transform: scale(1.1);
+        }
+
+        .preset-color {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .preset-color:hover {
+            transform: scale(1.15);
+            border-color: #333;
+        }
+
+        .preset-color.active {
+            border-color: #333;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .brush-size {
+            width: 120px;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .brush-size::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #333;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .brush-size::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .size-preview {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .size-dot {
+            background: #333;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .tool-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #f0f0f0;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tool-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-1px);
+        }
+
+        .tool-btn.active {
+            background: #333;
+            color: white;
+        }
+
+        .tool-btn.primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .tool-btn.primary:hover {
+            background: #45a049;
+        }
+
+        .tool-btn.danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .tool-btn.danger:hover {
+            background: #da190b;
+        }
+
+        #templatesPanel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+        }
+
+        #templatesPanel.show {
+            display: block;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 150px);
+            gap: 15px;
+        }
+
+        .template-item {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+
+        .template-item:hover {
+            border-color: #4CAF50;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #handIndicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 100;
+            display: none;
+        }
+
+        #handIndicator.show {
+            display: block;
+        }
+
+        .hand-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #f44336;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.active {
+            background: #4CAF50;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .fill-mode-indicator {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 100;
+            display: none;
+        }
+
+        .fill-mode-indicator.show {
+            display: block;
+        }
+
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+            font-size: 24px;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .mirror-hint {
+            position: fixed;
+            top: 120px;
+            left: 20px;
+            background: rgba(255, 193, 7, 0.9);
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loadingScreen">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div>正在加载手部追踪...</div>
+        </div>
+    </div>
+
+    <div id="container">
+        <div id="videoContainer">
+            <video id="videoElement" autoplay playsinline></video>
+            <canvas id="canvasElement"></canvas>
+            <canvas id="drawingCanvas"></canvas>
+        </div>
+
+        <div id="handIndicator">
+            <div class="hand-status">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">未检测到手部</span>
+            </div>
+        </div>
+
+        <div class="fill-mode-indicator" id="fillModeIndicator">
+            填充模式已开启 - 握拳填充
+        </div>
+
+        <div class="mirror-hint">
+            <span>🔄</span>
+            <span>镜像模式已开启</span>
+        </div>
+
+        <div id="toolbar">
+            <div class="tool-group">
+                <span class="tool-label">颜色</span>
+                <input type="color" id="colorPicker" class="color-picker" value="#000000">
+                <div class="preset-color" style="background: #000000" data-color="#000000"></div>
+                <div class="preset-color" style="background: #FF0000" data-color="#FF0000"></div>
+                <div class="preset-color" style="background: #00FF00" data-color="#00FF00"></div>
+                <div class="preset-color" style="background: #0000FF" data-color="#0000FF"></div>
+                <div class="preset-color" style="background: #FFFF00" data-color="#FFFF00"></div>
+                <div class="preset-color" style="background: #FF00FF" data-color="#FF00FF"></div>
+            </div>
+
+            <div class="tool-group">
+                <span class="tool-label">粗细</span>
+                <input type="range" id="brushSize" class="brush-size" min="1" max="50" value="5">
+                <div class="size-preview">
+                    <div class="size-dot" id="sizeDot"></div>
+                </div>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn active" id="drawBtn">
+                    ✏️ 画笔
+                </button>
+                <button class="tool-btn" id="eraseBtn">
+                    🧹 橡皮擦
+                </button>
+                <button class="tool-btn" id="fillBtn">
+                    🪣 填充
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn" id="templateBtn">
+                    📐 简笔画
+                </button>
+                <button class="tool-btn primary" id="saveBtn">
+                    💾 保存
+                </button>
+                <button class="tool-btn danger" id="clearBtn">
+                    🗑️ 清空
+                </button>
+            </div>
+        </div>
+
+        <div id="templatesPanel">
+            <h3 style="margin-bottom: 15px; text-align: center;">选择简笔画</h3>
+            <div class="template-grid">
+                <div class="template-item" data-template="sun">☀️</div>
+                <div class="template-item" data-template="moon">🌙</div>
+                <div class="template-item" data-template="star">⭐</div>
+                <div class="template-item" data-template="heart">❤️</div>
+                <div class="template-item" data-template="flower">🌸</div>
+                <div class="template-item" data-template="tree">🌳</div>
+                <div class="template-item" data-template="house">🏠</div>
+                <div class="template-item" data-template="car">🚗</div>
+                <div class="template-item" data-template="cat">🐱</div>
+                <div class="template-item" data-template="dog">🐶</div>
+                <div class="template-item" data-template="bird">🐦</div>
+                <div class="template-item" data-template="fish">🐠</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let videoElement, canvasElement, drawingCanvas, canvasCtx, drawingCtx;
+        let hands, camera;
+        let isDrawing = false;
+        let currentTool = 'draw';
+        let currentColor = '#000000';
+        let currentSize = 5;
+        let lastX = 0, lastY = 0;
+        let handDetected = false;
+        let isFillMode = false;
+
+        // 简笔画模板
+        const templates = {
+            sun: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画太阳
+                drawingCtx.beginPath();
+                drawingCtx.arc(400, 300, 80, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 画光线
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i * Math.PI * 2) / 8;
+                    drawingCtx.beginPath();
+                    drawingCtx.moveTo(400 + Math.cos(angle) * 100, 300 + Math.sin(angle) * 100);
+                    drawingCtx.lineTo(400 + Math.cos(angle) * 130, 300 + Math.sin(angle) * 130);
+                    drawingCtx.stroke();
+                }
+                drawingCtx.restore();
+            },
+            moon: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画月亮
+                drawingCtx.beginPath();
+                drawingCtx.arc(400, 300, 80, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.arc(440, 300, 80, 0, Math.PI * 2);
+                drawingCtx.fillStyle = 'white';
+                drawingCtx.fill();
+                drawingCtx.restore();
+            },
+            star: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画五角星
+                drawingCtx.beginPath();
+                const cx = 400, cy = 300, r = 80;
+                for (let i = 0; i < 5; i++) {
+                    const angle = (i * Math.PI * 2) / 5 - Math.PI / 2;
+                    const x = cx + Math.cos(angle) * r;
+                    const y = cy + Math.sin(angle) * r;
+                    if (i === 0) drawingCtx.moveTo(x, y);
+                    else drawingCtx.lineTo(x, y);
+
+                    const innerAngle = angle + Math.PI / 5;
+                    const innerX = cx + Math.cos(innerAngle) * (r * 0.4);
+                    const innerY = cy + Math.sin(innerAngle) * (r * 0.4);
+                    drawingCtx.lineTo(innerX, innerY);
+                }
+                drawingCtx.closePath();
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            },
+            heart: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画心形
+                drawingCtx.beginPath();
+                const cx = 400, cy = 300;
+                drawingCtx.moveTo(cx, cy + 30);
+                drawingCtx.bezierCurveTo(cx, cy - 20, cx - 60, cy - 20, cx - 60, cy + 10);
+                drawingCtx.bezierCurveTo(cx - 60, cy + 40, cx, cy + 70, cx, cy + 100);
+                drawingCtx.bezierCurveTo(cx, cy + 70, cx + 60, cy + 40, cx + 60, cy + 10);
+                drawingCtx.bezierCurveTo(cx + 60, cy - 20, cx, cy - 20, cx, cy + 30);
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            },
+            flower: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画花朵
+                const cx = 400, cy = 300;
+                // 花瓣
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI * 2) / 6;
+                    drawingCtx.beginPath();
+                    drawingCtx.ellipse(
+                        cx + Math.cos(angle) * 40,
+                        cy + Math.sin(angle) * 40,
+                        30, 15, angle, 0, Math.PI * 2
+                    );
+                    drawingCtx.stroke();
+                }
+                // 花心
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx, cy, 20, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 茎
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx, cy + 20);
+                drawingCtx.lineTo(cx, cy + 100);
+                drawingCtx.stroke();
+                // 叶子
+                drawingCtx.beginPath();
+                drawingCtx.ellipse(cx - 30, cy + 60, 20, 10, -Math.PI / 4, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.ellipse(cx + 30, cy + 70, 20, 10, Math.PI / 4, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            },
+            tree: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画树
+                const cx = 400, cy = 300;
+                // 树干
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx - 20, cy + 50);
+                drawingCtx.lineTo(cx - 15, cy);
+                drawingCtx.lineTo(cx + 15, cy);
+                drawingCtx.lineTo(cx + 20, cy + 50);
+                drawingCtx.closePath();
+                drawingCtx.stroke();
+                // 树冠
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx, cy - 30, 60, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 40, cy - 10, 40, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx + 40, cy - 10, 40, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            },
+            house: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画房子
+                const cx = 400, cy = 300;
+                // 房体
+                drawingCtx.strokeRect(cx - 80, cy - 20, 160, 100);
+                // 屋顶
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx - 100, cy - 20);
+                drawingCtx.lineTo(cx, cy - 80);
+                drawingCtx.lineTo(cx + 100, cy - 20);
+                drawingCtx.closePath();
+                drawingCtx.stroke();
+                // 门
+                drawingCtx.strokeRect(cx - 20, cy + 30, 40, 50);
+                // 窗户
+                drawingCtx.strokeRect(cx - 60, cy, 30, 30);
+                drawingCtx.strokeRect(cx + 30, cy, 30, 30);
+                // 窗户十字
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx - 45, cy);
+                drawingCtx.lineTo(cx - 45, cy + 30);
+                drawingCtx.moveTo(cx - 60, cy + 15);
+                drawingCtx.lineTo(cx - 30, cy + 15);
+                drawingCtx.moveTo(cx + 45, cy);
+                drawingCtx.lineTo(cx + 45, cy + 30);
+                drawingCtx.moveTo(cx + 30, cy + 15);
+                drawingCtx.lineTo(cx + 60, cy + 15);
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            },
+            car: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画汽车
+                const cx = 400, cy = 300;
+                // 车身
+                drawingCtx.strokeRect(cx - 80, cy - 20, 160, 40);
+                // 车顶
+                drawingCtx.strokeRect(cx - 50, cy - 50, 100, 30);
+                // 车轮
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 50, cy + 30, 20, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx + 50, cy + 30, 20, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 车窗
+                drawingCtx.strokeRect(cx - 40, cy - 40, 35, 20);
+                drawingCtx.strokeRect(cx + 5, cy - 40, 35, 20);
+                drawingCtx.restore();
+            },
+            cat: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画猫
+                const cx = 400, cy = 300;
+                // 头
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx, cy, 50, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 耳朵
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx - 40, cy - 30);
+                drawingCtx.lineTo(cx - 50, cy - 60);
+                drawingCtx.lineTo(cx - 20, cy - 40);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx + 40, cy - 30);
+                drawingCtx.lineTo(cx + 50, cy - 60);
+                drawingCtx.lineTo(cx + 20, cy - 40);
+                drawingCtx.stroke();
+                // 眼睛
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 15, cy - 10, 5, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx + 15, cy - 10, 5, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 鼻子
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx, cy);
+                drawingCtx.lineTo(cx - 5, cy + 5);
+                drawingCtx.lineTo(cx + 5, cy + 5);
+                drawingCtx.closePath();
+                drawingCtx.stroke();
+                // 嘴巴
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx, cy + 5);
+                drawingCtx.lineTo(cx - 20, cy + 15);
+                drawingCtx.moveTo(cx, cy + 5);
+                drawingCtx.lineTo(cx + 20, cy + 15);
+                drawingCtx.stroke();
+                // 胡须
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx - 50, cy - 5);
+                drawingCtx.lineTo(cx - 80, cy - 10);
+                drawingCtx.moveTo(cx - 50, cy + 5);
+                drawingCtx.lineTo(cx - 80, cy + 5);
+                drawingCtx.moveTo(cx + 50, cy - 5);
+                drawingCtx.lineTo(cx + 80, cy - 10);
+                drawingCtx.moveTo(cx + 50, cy + 5);
+                drawingCtx.lineTo(cx + 80, cy + 5);
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            },
+            dog: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画狗
+                const cx = 400, cy = 300;
+                // 头
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx, cy, 50, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 耳朵
+                drawingCtx.beginPath();
+                drawingCtx.ellipse(cx - 40, cy - 20, 20, 40, -Math.PI / 6, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.ellipse(cx + 40, cy - 20, 20, 40, Math.PI / 6, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 眼睛
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 15, cy - 10, 5, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx + 15, cy - 10, 5, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 鼻子
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx, cy + 5, 5, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 嘴巴
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx, cy + 20, 20, 0, Math.PI);
+                drawingCtx.stroke();
+                // 舌头
+                drawingCtx.beginPath();
+                drawingCtx.ellipse(cx, cy + 25, 10, 15, 0, 0, Math.PI);
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            },
+            bird: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画鸟
+                const cx = 400, cy = 300;
+                // 身体
+                drawingCtx.beginPath();
+                drawingCtx.ellipse(cx, cy, 40, 30, 0, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 头
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 30, cy - 20, 25, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 眼睛
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 35, cy - 25, 3, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 喙
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx - 50, cy - 20);
+                drawingCtx.lineTo(cx - 60, cy - 15);
+                drawingCtx.lineTo(cx - 50, cy - 10);
+                drawingCtx.stroke();
+                // 翅膀
+                drawingCtx.beginPath();
+                drawingCtx.ellipse(cx + 10, cy - 5, 30, 15, Math.PI / 6, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 尾巴
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx + 35, cy + 10);
+                drawingCtx.lineTo(cx + 60, cy + 5);
+                drawingCtx.lineTo(cx + 55, cy + 20);
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            },
+            fish: () => {
+                drawingCtx.save();
+                drawingCtx.strokeStyle = '#333';
+                drawingCtx.lineWidth = 3;
+                // 画鱼
+                const cx = 400, cy = 300;
+                // 身体
+                drawingCtx.beginPath();
+                drawingCtx.ellipse(cx, cy, 60, 30, 0, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                // 尾巴
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx + 55, cy);
+                drawingCtx.lineTo(cx + 80, cy - 20);
+                drawingCtx.lineTo(cx + 80, cy + 20);
+                drawingCtx.closePath();
+                drawingCtx.stroke();
+                // 鱼鳍
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx - 20, cy - 25);
+                drawingCtx.lineTo(cx - 10, cy - 40);
+                drawingCtx.lineTo(cx, cy - 25);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.moveTo(cx - 20, cy + 25);
+                drawingCtx.lineTo(cx - 10, cy + 40);
+                drawingCtx.lineTo(cx, cy + 25);
+                drawingCtx.stroke();
+                // 眼睛
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 30, cy - 5, 8, 0, Math.PI * 2);
+                drawingCtx.stroke();
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 30, cy - 5, 3, 0, Math.PI * 2);
+                drawingCtx.fillStyle = '#000';
+                drawingCtx.fill();
+                // 嘴巴
+                drawingCtx.beginPath();
+                drawingCtx.arc(cx - 55, cy, 5, 0, Math.PI);
+                drawingCtx.stroke();
+                drawingCtx.restore();
+            }
+        };
+
+        // 初始化
+        function init() {
+            videoElement = document.getElementById('videoElement');
+            canvasElement = document.getElementById('canvasElement');
+            drawingCanvas = document.getElementById('drawingCanvas');
+            canvasCtx = canvasElement.getContext('2d');
+            drawingCtx = drawingCanvas.getContext('2d');
+
+            // 设置画布大小
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // 初始化工具栏
+            initToolbar();
+
+            // 初始化手部追踪
+            initHandTracking();
+
+            // 隐藏加载画面
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+            }, 2000);
+        }
+
+        // 调整画布大小
+        function resizeCanvas() {
+            const container = document.getElementById('videoContainer');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            canvasElement.width = width;
+            canvasElement.height = height;
+            drawingCanvas.width = width;
+            drawingCanvas.height = height;
+
+            // 设置画布样式
+            drawingCtx.lineCap = 'round';
+            drawingCtx.lineJoin = 'round';
+        }
+
+        // 初始化工具栏
+        function initToolbar() {
+            // 颜色选择器
+            const colorPicker = document.getElementById('colorPicker');
+            colorPicker.addEventListener('change', (e) => {
+                currentColor = e.target.value;
+                updateActivePresetColor();
+            });
+
+            // 预设颜色
+            const presetColors = document.querySelectorAll('.preset-color');
+            presetColors.forEach(color => {
+                color.addEventListener('click', () => {
+                    currentColor = color.dataset.color;
+                    colorPicker.value = currentColor;
+                    updateActivePresetColor();
+                });
+            });
+
+            // 画笔大小
+            const brushSize = document.getElementById('brushSize');
+            const sizeDot = document.getElementById('sizeDot');
+            brushSize.addEventListener('input', (e) => {
+                currentSize = e.target.value;
+                sizeDot.style.width = currentSize + 'px';
+                sizeDot.style.height = currentSize + 'px';
+            });
+            sizeDot.style.width = currentSize + 'px';
+            sizeDot.style.height = currentSize + 'px';
+
+            // 工具按钮
+            document.getElementById('drawBtn').addEventListener('click', () => setTool('draw'));
+            document.getElementById('eraseBtn').addEventListener('click', () => setTool('erase'));
+            document.getElementById('fillBtn').addEventListener('click', () => setTool('fill'));
+            document.getElementById('templateBtn').addEventListener('click', toggleTemplates);
+            document.getElementById('saveBtn').addEventListener('click', saveImage);
+            document.getElementById('clearBtn').addEventListener('click', clearCanvas);
+
+            // 简笔画模板
+            const templateItems = document.querySelectorAll('.template-item');
+            templateItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const template = item.dataset.template;
+                    if (templates[template]) {
+                        templates[template]();
+                        document.getElementById('templatesPanel').classList.remove('show');
+                    }
+                });
+            });
+        }
+
+        // 更新活动预设颜色
+        function updateActivePresetColor() {
+            const presetColors = document.querySelectorAll('.preset-color');
+            presetColors.forEach(color => {
+                if (color.dataset.color === currentColor) {
+                    color.classList.add('active');
+                } else {
+                    color.classList.remove('active');
+                }
+            });
+        }
+
+        // 设置工具
+        function setTool(tool) {
+            currentTool = tool;
+            isFillMode = tool === 'fill';
+
+            // 更新按钮状态
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (tool === 'draw') {
+                document.getElementById('drawBtn').classList.add('active');
+                document.getElementById('fillModeIndicator').classList.remove('show');
+            } else if (tool === 'erase') {
+                document.getElementById('eraseBtn').classList.add('active');
+                document.getElementById('fillModeIndicator').classList.remove('show');
+            } else if (tool === 'fill') {
+                document.getElementById('fillBtn').classList.add('active');
+                document.getElementById('fillModeIndicator').classList.add('show');
+            }
+        }
+
+        // 切换模板面板
+        function toggleTemplates() {
+            const panel = document.getElementById('templatesPanel');
+            panel.classList.toggle('show');
+        }
+
+        // 保存图片
+        function saveImage() {
+            // 创建临时画布合并视频和绘画
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = drawingCanvas.width;
+            tempCanvas.height = drawingCanvas.height;
+
+            // 绘制视频帧（镜像）
+            tempCtx.save();
+            tempCtx.scale(-1, 1);
+            tempCtx.drawImage(videoElement, -tempCanvas.width, 0, tempCanvas.width, tempCanvas.height);
+            tempCtx.restore();
+
+            // 绘制画布内容
+            tempCtx.drawImage(drawingCanvas, 0, 0);
+
+            // 下载图片
+            const link = document.createElement('a');
+            link.download = `drawing_${new Date().getTime()}.png`;
+            link.href = tempCanvas.toDataURL();
+            link.click();
+        }
+
+        // 清空画布
+        function clearCanvas() {
+            if (confirm('确定要清空画布吗？')) {
+                drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            }
+        }
+
+        // 初始化手部追踪
+        function initHandTracking() {
+            hands = new Hands({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }
+            });
+
+            hands.setOptions({
+                maxNumHands: 1,
+                modelComplexity: 1,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+
+            hands.onResults(onHandResults);
+
+            camera = new Camera(videoElement, {
+                onFrame: async () => {
+                    await hands.send({ image: videoElement });
+                },
+                width: 1280,
+                height: 720
+            });
+
+            camera.start();
+        }
+
+        // 手部追踪结果处理
+        function onHandResults(results) {
+            // 清除画布
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            canvasCtx.scale(-1, 1); // 镜像绘制
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                handDetected = true;
+                const landmarks = results.multiHandLandmarks[0];
+
+                // 绘制手部关键点（镜像）
+                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 2 });
+                drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 1 });
+
+                // 获取食指尖位置（转换为镜像坐标）
+                const indexTip = landmarks[8];
+                const x = indexTip.x * canvasElement.width; // 不需要镜像，因为画布已经是镜像的
+                const y = indexTip.y * canvasElement.height;
+
+                // 检测手势
+                const gesture = detectGesture(landmarks);
+
+                // 根据手势执行操作
+                if (gesture === 'point' && currentTool !== 'fill') {
+                    // 画笔或橡皮擦模式
+                    if (isDrawing) {
+                        draw(x, y);
+                    }
+                    lastX = x;
+                    lastY = y;
+                    isDrawing = true;
+                } else if (gesture === 'fist' && currentTool === 'fill') {
+                    // 填充模式
+                    fillArea(x, y);
+                } else {
+                    isDrawing = false;
+                }
+
+                // 更新手部状态指示器
+                updateHandStatus(true, gesture);
+            } else {
+                handDetected = false;
+                isDrawing = false;
+                updateHandStatus(false);
+            }
+
+            canvasCtx.restore();
+        }
+
+        // 检测手势
+        function detectGesture(landmarks) {
+            // 获取关键点
+            const thumbTip = landmarks[4];
+            const thumbIP = landmarks[3];
+            const indexTip = landmarks[8];
+            const indexPIP = landmarks[6];
+            const middleTip = landmarks[12];
+            const middlePIP = landmarks[10];
+            const ringTip = landmarks[16];
+            const ringPIP = landmarks[14];
+            const pinkyTip = landmarks[20];
+            const pinkyPIP = landmarks[18];
+
+            // 检测是否为指向手势（只有食指伸直）
+            const indexExtended = indexTip.y < indexPIP.y;
+            const middleFolded = middleTip.y > middlePIP.y;
+            const ringFolded = ringTip.y > ringPIP.y;
+            const pinkyFolded = pinkyTip.y > pinkyPIP.y;
+
+            if (indexExtended && middleFolded && ringFolded && pinkyFolded) {
+                return 'point';
+            }
+
+            // 检测是否为拳头（所有手指都弯曲）
+            const thumbFolded = Math.abs(thumbTip.x - thumbIP.x) < 0.05;
+            const allFolded = thumbFolded && !indexExtended && middleFolded && ringFolded && pinkyFolded;
+
+            if (allFolded) {
+                return 'fist';
+            }
+
+            return 'unknown';
+        }
+
+        // 绘制
+        function draw(x, y) {
+            drawingCtx.save();
+
+            if (currentTool === 'draw') {
+                drawingCtx.globalCompositeOperation = 'source-over';
+                drawingCtx.strokeStyle = currentColor;
+            } else if (currentTool === 'erase') {
+                drawingCtx.globalCompositeOperation = 'destination-out';
+            }
+
+            drawingCtx.lineWidth = currentSize;
+            drawingCtx.beginPath();
+            drawingCtx.moveTo(lastX, lastY);
+            drawingCtx.lineTo(x, y);
+            drawingCtx.stroke();
+
+            drawingCtx.restore();
+        }
+
+        // 填充区域
+        function fillArea(x, y) {
+            // 获取点击位置的颜色
+            const imageData = drawingCtx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height);
+            const targetColor = getPixelColor(imageData, x, y);
+            const fillColor = hexToRgb(currentColor);
+
+            // 如果目标颜色和填充颜色相同，则不填充
+            if (colorsMatch(targetColor, fillColor)) {
+                return;
+            }
+
+            // 执行洪水填充算法
+            floodFill(imageData, x, y, targetColor, fillColor);
+            drawingCtx.putImageData(imageData, 0, 0);
+        }
+
+        // 获取像素颜色
+        function getPixelColor(imageData, x, y) {
+            const index = (Math.floor(y) * imageData.width + Math.floor(x)) * 4;
+            return {
+                r: imageData.data[index],
+                g: imageData.data[index + 1],
+                b: imageData.data[index + 2],
+                a: imageData.data[index + 3]
+            };
+        }
+
+        // 颜色匹配
+        function colorsMatch(color1, color2) {
+            return color1.r === color2.r && color1.g === color2.g &&
+                color1.b === color2.b && color1.a === color2.a;
+        }
+
+        // 十六进制转RGB
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16),
+                a: 255
+            } : null;
+        }
+
+        // 洪水填充算法
+        function floodFill(imageData, startX, startY, targetColor, fillColor) {
+            const width = imageData.width;
+            const height = imageData.height;
+            const stack = [[startX, startY]];
+            const visited = new Set();
+
+            while (stack.length > 0) {
+                const [x, y] = stack.pop();
+                const key = `${x},${y}`;
+
+                if (visited.has(key)) continue;
+                visited.add(key);
+
+                if (x < 0 || x >= width || y < 0 || y >= height) continue;
+
+                const currentColor = getPixelColor(imageData, x, y);
+                if (!colorsMatch(currentColor, targetColor)) continue;
+
+                // 设置新颜色
+                const index = (y * width + x) * 4;
+                imageData.data[index] = fillColor.r;
+                imageData.data[index + 1] = fillColor.g;
+                imageData.data[index + 2] = fillColor.b;
+                imageData.data[index + 3] = fillColor.a;
+
+                // 添加相邻像素
+                stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+            }
+        }
+
+        // 更新手部状态
+        function updateHandStatus(detected, gesture = '') {
+            const indicator = document.getElementById('handIndicator');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
+            if (detected) {
+                indicator.classList.add('show');
+                statusDot.classList.add('active');
+
+                if (gesture === 'point') {
+                    statusText.textContent = '检测到指向手势 - 可以绘画';
+                } else if (gesture === 'fist') {
+                    statusText.textContent = '检测到拳头手势 - 可以填充';
+                } else {
+                    statusText.textContent = '检测到手部 - 请做出手势';
+                }
+            } else {
+                indicator.classList.remove('show');
+                statusDot.classList.remove('active');
+            }
+        }
+
+        // 启动应用
+        window.addEventListener('load', init);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颜色填充游戏</title>
+    <style>
+        /* --- 样式 --- */
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            /* overflow: hidden; 已移除 */
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .game-board {
+            display: grid;
+            gap: 2px;
+            margin-bottom: 20px;
+            border: 2px solid #333;
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cell.obstacle {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><rect width="30" height="30" fill="black"/><text x="10" y="20" fill="white" font-size="15">X</text></svg>');
+            cursor: not-allowed;
+        }
+
+        .cell.special {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"><text x="10" y="20" fill="black" font-size="15">★</text></svg>');
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        select,
+        input {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .help-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #2196F3;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .help-button:hover {
+            background-color: #0b7dda;
+        }
+
+        .rules-section {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .rules-section h3 {
+            margin-bottom: 5px;
+            color: #2196F3;
+        }
+
+        .rules-section ul {
+            padding-left: 20px;
+        }
+
+        .invalid-move {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-5px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .infinite-moves {
+            color: #FF5252;
+            font-weight: bold;
+        }
+    </style>
+
+    <!-- 引入 canvas-confetti 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+    <h1>颜色填充游戏</h1>
+
+    <div class="game-container">
+        <div class="game-info">
+            <div>步数: <span id="moves">0</span>/<span id="max-moves">25</span> <span id="infinite-indicator"
+                    class="infinite-moves" style="display: none;">(∞)</span></div>
+            <div>网格: <span id="grid-size-display">10x10</span></div>
+        </div>
+
+        <div class="game-board" id="game-board"></div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="colors">颜色数量:</label>
+                <select id="colors">
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6" selected>6</option>
+                    <option value="8">8</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="grid-size">网格大小:</label>
+                <select id="grid-size">
+                    <option value="6">6x6</option>
+                    <option value="8">8x8</option>
+                    <option value="10" selected>10x10</option>
+                    <option value="14">14x14</option>
+                    <option value="20">20x20</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="grid-shape">棋盘形状:</label>
+                <select id="grid-shape">
+                    <option value="square" selected>方形</option>
+                    <option value="hexagon">六边形</option>
+                    <option value="triangle">三角形</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="obstacles">障碍物:</label>
+                <input type="checkbox" id="obstacles">
+
+                <label for="special-cells">特殊格子:</label>
+                <input type="checkbox" id="special-cells">
+
+                <label for="infinite-moves">无限步数:</label>
+                <input type="checkbox" id="infinite-moves">
+            </div>
+
+            <div class="button-group">
+                <button id="new-game-btn">新游戏</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="help-button" id="help-button">?</div>
+
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <h2>如何玩颜色填充游戏</h2>
+
+            <div class="rules-section">
+                <h3>游戏目标</h3>
+                <p>尽可能用最少的步数将整个棋盘填充为同一种颜色。</p>
+            </div>
+
+            <div class="rules-section">
+                <h3>玩法</h3>
+                <ul>
+                    <li>游戏从棋盘左上角的格子开始。</li>
+                    <li>点击任意格子，将你已填充区域的颜色更改为该格子的颜色。</li>
+                    <li>当你更改颜色时，所有相邻且颜色相同的格子将加入你的已填充区域。</li>
+                    <li>继续操作，直到整个棋盘变为同一种颜色。</li>
+                    <li>尝试在顶部显示的步数限制内完成游戏。</li>
+                    <li>无效操作（选择当前已填充区域的颜色）不计入步数限制。</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h3>游戏选项</h3>
+                <ul>
+                    <li><strong>颜色数量:</strong> 选择棋盘上出现的不同颜色数量。</li>
+                    <li><strong>网格大小:</strong> 选择游戏棋盘的尺寸。</li>
+                    <li><strong>棋盘形状:</strong> 更改棋盘及其格子的整体形状：
+                        <ul>
+                            <li>方形: 传统的方形网格</li>
+                            <li>六边形: 六边形格子按蜂窝状排列</li>
+                            <li>三角形: 三角形格子按网格排列</li>
+                        </ul>
+                    </li>
+                    <li><strong>障碍物:</strong> 添加黑色格子，这些格子无法被填充，你需要绕过它们。</li>
+                    <li><strong>特殊格子:</strong> 添加带有星号标记的特殊格子。</li>
+                    <li><strong>无限步数:</strong> 切换该选项可在没有步数限制的情况下进行更轻松的游戏。</li>
+                </ul>
+            </div>
+
+            <div class="rules-section">
+                <h3>策略提示</h3>
+                <ul>
+                    <li>寻找能连接棋盘大片区域的颜色。</li>
+                    <li>尝试提前规划几步。</li>
+                    <li>有时，选择一个不会立即占领很多格子但能为后续创造更好局面的操作会更有利。</li>
+                    <li>有障碍物时，你可能需要绕过它们以到达孤立区域。</li>
+                </ul>
+            </div>
+
+            <div class="modal-buttons">
+                <button id="close-help-btn">关闭</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal" id="win-modal">
+        <div class="modal-content">
+            <h2>恭喜！</h2>
+            <p>你用 <span id="final-moves">0</span> 步完成了游戏！</p>
+            <div class="modal-buttons">
+                <button id="new-game-modal-btn">新游戏</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="lose-modal">
+        <div class="modal-content">
+            <h2>游戏结束</h2>
+            <p>你已用完所有步数！</p>
+            <div class="modal-buttons">
+                <button id="try-again-btn">再试一次</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 游戏状态 ---
+        let gameState = {
+            board: [],
+            size: 10,
+            colors: 6,
+            shape: 'square',
+            hasObstacles: false,
+            hasSpecialCells: false,
+            infiniteMoves: false,
+            moves: 0,
+            maxMoves: 25,
+            floodedCells: new Set(),
+            colorPalette: [
+                '#FF5252', // 红色
+                '#4CAF50', // 绿色
+                '#2196F3', // 蓝色
+                '#FFEB3B', // 黄色
+                '#9C27B0', // 紫色
+                '#FF9800', // 橙色
+                '#00BCD4', // 青色
+                '#795548'  // 棕色
+            ]
+        };
+
+        // --- DOM 元素 ---
+        const gameBoard = document.getElementById('game-board');
+        const movesDisplay = document.getElementById('moves');
+        const maxMovesDisplay = document.getElementById('max-moves');
+        const infiniteIndicator = document.getElementById('infinite-indicator');
+        const gridSizeDisplay = document.getElementById('grid-size-display');
+        const colorsSelect = document.getElementById('colors');
+        const gridSizeSelect = document.getElementById('grid-size');
+        const gridShapeSelect = document.getElementById('grid-shape');
+        const obstaclesCheckbox = document.getElementById('obstacles');
+        const specialCellsCheckbox = document.getElementById('special-cells');
+        const infiniteMovesCheckbox = document.getElementById('infinite-moves');
+        const newGameBtn = document.getElementById('new-game-btn');
+        const helpButton = document.getElementById('help-button');
+        const helpModal = document.getElementById('help-modal');
+        const closeHelpBtn = document.getElementById('close-help-btn');
+        const winModal = document.getElementById('win-modal');
+        const loseModal = document.getElementById('lose-modal');
+        const finalMovesDisplay = document.getElementById('final-moves');
+        const newGameModalBtn = document.getElementById('new-game-modal-btn');
+        const tryAgainBtn = document.getElementById('try-again-btn');
+
+        // --- 游戏函数 ---
+
+        // 初始化游戏
+        function initGame() {
+            gameState.moves = 0;
+            gameState.floodedCells = new Set();
+            movesDisplay.textContent = gameState.moves;
+            maxMovesDisplay.textContent = gameState.maxMoves;
+            infiniteIndicator.style.display = gameState.infiniteMoves ? 'inline' : 'none';
+            gridSizeDisplay.textContent = `${gameState.size}x${gameState.size}`;
+            createBoard();
+            const startCell = gameState.board[0][0];
+            if (!startCell.isObstacle) {
+                gameState.floodedCells.add('0,0');
+                floodFill(0, 0, startCell.color, startCell.color);
+                updateBoardDisplay();
+            }
+        }
+
+        // 创建游戏棋盘
+        function createBoard() {
+            gameState.board = [];
+            gameBoard.innerHTML = '';
+            gameBoard.style.gridTemplateColumns = `repeat(${gameState.size}, 30px)`;
+            gameState.maxMoves = Math.floor(gameState.size * 1.5 + gameState.colors);
+            maxMovesDisplay.textContent = gameState.maxMoves;
+
+            for (let row = 0; row < gameState.size; row++) {
+                gameState.board[row] = [];
+                for (let col = 0; col < gameState.size; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    let isObstacle = false;
+                    let isSpecial = false;
+
+                    if (gameState.hasObstacles && Math.random() < 0.05 && !(row === 0 && col === 0)) {
+                        isObstacle = true;
+                        cell.classList.add('obstacle');
+                    } else if (gameState.hasSpecialCells && Math.random() < 0.05 && !(row === 0 && col === 0)) {
+                        isSpecial = true;
+                        cell.classList.add('special');
+                    }
+                    const colorIndex = Math.floor(Math.random() * gameState.colors);
+                    const color = isObstacle ? '#000000' : gameState.colorPalette[colorIndex];
+                    cell.style.backgroundColor = color;
+                    gameBoard.appendChild(cell);
+                    gameState.board[row][col] = { color, isObstacle, isSpecial };
+                    cell.addEventListener('click', handleCellClick);
+                }
+            }
+            if (gameState.shape !== 'square') {
+                applyGridShape();
+            }
+        }
+        // 处理格子点击事件
+        function handleCellClick(event) {
+            const cell = event.target;
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            const clickedColor = gameState.board[row][col].color;
+            const currentColor = getCurrentFloodColor();
+
+            if (clickedColor !== currentColor && !gameState.board[row][col].isObstacle) {
+                makeMove(clickedColor);
+            } else if (clickedColor === currentColor) {
+                gameBoard.classList.add('invalid-move');
+                setTimeout(() => gameBoard.classList.remove('invalid-move'), 500);
+            }
+        }
+
+        // 获取当前已填充区域的颜色
+        function getCurrentFloodColor() {
+            for (const coords of gameState.floodedCells) {
+                const [row, col] = coords.split(',').map(Number);
+                return gameState.board[row][col].color;
+            }
+            return null;
+        }
+
+        // 进行一次操作
+        function makeMove(newColor) {
+            gameState.moves++;
+            movesDisplay.textContent = gameState.moves;
+            const currentColor = getCurrentFloodColor();
+            const floodedCellsArray = Array.from(gameState.floodedCells);
+            for (const coords of floodedCellsArray) {
+                const [row, col] = coords.split(',').map(Number);
+                floodFill(row, col, currentColor, newColor);
+            }
+            updateBoardDisplay();
+            checkGameStatus();
+        }
+
+        // 颜色填充
+        function floodFill(row, col, oldColor, newColor) {
+            if (!gameState.board[row][col].isObstacle) {
+                gameState.board[row][col].color = newColor;
+                gameState.floodedCells.add(`${row},${col}`);
+            }
+            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            for (const [dx, dy] of directions) {
+                const newRow = row + dx;
+                const newCol = col + dy;
+                if (
+                    newRow >= 0 && newRow < gameState.size &&
+                    newCol >= 0 && newCol < gameState.size &&
+                    gameState.board[newRow][newCol].color === oldColor &&
+                    !gameState.board[newRow][newCol].isObstacle &&
+                    !gameState.floodedCells.has(`${newRow},${newCol}`)
+                ) {
+                    floodFill(newRow, newCol, oldColor, newColor);
+                }
+            }
+        }
+
+        // 更新棋盘显示
+        function updateBoardDisplay() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                setTimeout(() => { cell.style.backgroundColor = gameState.board[row][col].color; }, 50 * (row + col) / 2);
+            });
+        }
+
+        // 检查游戏状态（胜利/失败）
+        function checkGameStatus() {
+            const firstCell = gameState.board[0][0];
+            let targetColor = firstCell.isObstacle ? null : firstCell.color;
+
+            if (targetColor === null) {
+                // 如果第一个格子是障碍物
+                outerLoop:
+                for (let r = 0; r < gameState.size; r++) {
+                    for (let c = 0; c < gameState.size; c++) {
+                        if (!gameState.board[r][c].isObstacle) {
+                            targetColor = gameState.board[r][c].color;
+                            break outerLoop;
+                        }
+                    }
+                }
+            }
+            if (targetColor === null) return;
+
+            for (let row = 0; row < gameState.size; row++) {
+                for (let col = 0; col < gameState.size; col++) {
+                    const cell = gameState.board[row][col];
+                    if (!cell.isObstacle && cell.color !== targetColor) {
+                        if (!gameState.infiniteMoves && gameState.moves >= gameState.maxMoves) {
+                            setTimeout(() => { loseModal.style.display = 'flex'; }, 500);
+                        }
+                        return;
+                    }
+                }
+            }
+
+            finalMovesDisplay.textContent = gameState.moves;
+
+            setTimeout(() => {
+                winModal.style.display = 'flex';
+
+                // --- 壮观的五彩纸屑效果（改进版） ---
+
+                // 临时隐藏溢出内容，防止五彩纸屑出现时显示滚动条
+                document.body.style.overflow = 'hidden';
+
+                // 创建五彩纸屑爆发效果的函数（此处无更改）
+                function confettiBurst(originX, angle) {
+                    confetti({
+                        particleCount: 200,
+                        spread: 50,
+                        angle: angle,
+                        origin: { x: originX, y: 1 },
+                        startVelocity: 60,
+                        gravity: 0.8,
+                        ticks: 300,
+                        scalar: 1.2
+                    });
+                }
+
+                // 从左到右的爆发效果
+                confettiBurst(0, 45);
+
+                // 从右到左的爆发效果
+                confettiBurst(1, 135);
+
+                // 额外的小爆发效果（可选）
+                confettiBurst(0, 60);
+                confettiBurst(1, 120);
+
+                // 五彩纸屑结束后恢复溢出设置（根据需要调整超时时间）
+                setTimeout(() => {
+                    document.body.style.overflow = ''; // 或 'auto'，如果你更喜欢
+                }, 1000);  // 1 秒延迟（应该足够了）
+
+            }, 500);
+        }
+
+
+        // 应用网格形状
+        function applyGridShape() {
+            const cells = document.querySelectorAll('.cell');
+            if (gameState.shape === 'hexagon') {
+                gameBoard.style.gridTemplateColumns = `repeat(${gameState.size}, 26px)`;
+                cells.forEach((cell, index) => {
+                    const row = Math.floor(index / gameState.size);
+                    cell.style.clipPath = 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)';
+                    cell.style.margin = '0 -3px';
+                    if (row % 2 === 1) { cell.style.transform = 'translateX(13px)'; }
+                });
+            } else if (gameState.shape === 'triangle') {
+                gameBoard.style.gridTemplateColumns = `repeat(${gameState.size}, 30px)`;
+                cells.forEach((cell, index) => {
+                    const row = Math.floor(index / gameState.size);
+                    const col = index % gameState.size;
+                    if ((row + col) % 2 === 0) {
+                        cell.style.clipPath = 'polygon(50% 0%, 100% 100%, 0% 100%)';
+                    } else {
+                        cell.style.clipPath = 'polygon(0% 0%, 100% 0%, 50% 100%)';
+                    }
+                });
+            }
+        }
+
+
+        // --- 事件监听器 ---
+        newGameBtn.addEventListener('click', () => {
+            gameState.size = parseInt(gridSizeSelect.value);
+            gameState.colors = parseInt(colorsSelect.value);
+            gameState.shape = gridShapeSelect.value;
+            gameState.hasObstacles = obstaclesCheckbox.checked;
+            gameState.hasSpecialCells = specialCellsCheckbox.checked;
+            gameState.infiniteMoves = infiniteMovesCheckbox.checked;
+            initGame();
+        });
+
+        newGameModalBtn.addEventListener('click', () => {
+            winModal.style.display = 'none';
+            gameState.size = parseInt(gridSizeSelect.value);
+            gameState.colors = parseInt(colorsSelect.value);
+            gameState.shape = gridShapeSelect.value;
+            gameState.hasObstacles = obstaclesCheckbox.checked;
+            gameState.hasSpecialCells = specialCellsCheckbox.checked;
+            gameState.infiniteMoves = infiniteMovesCheckbox.checked;
+            initGame();
+        });
+
+        tryAgainBtn.addEventListener('click', () => {
+            loseModal.style.display = 'none';
+            initGame();
+        });
+
+        helpButton.addEventListener('click', () => { helpModal.style.display = 'flex'; });
+        closeHelpBtn.addEventListener('click', () => { helpModal.style.display = 'none'; });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === helpModal) { helpModal.style.display = 'none'; }
+            if (event.target === winModal) { winModal.style.display = 'none'; }
+            if (event.target === loseModal) { loseModal.style.display = 'none'; }
+        });
+
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+
+</html>
