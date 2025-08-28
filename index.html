@@ -1,501 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechCore Systems</title>
+    <title>网站内容索引</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --dark-bg: #0a0a0a;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --accent-color: #00d4ff;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #f5f6fa;
+            --text-color: #2d3436;
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        .background-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes gridMove {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            100% {
-                transform: translate(50px, 50px);
-            }
-        }
-
-        .floating-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0px) rotate(0deg);
-                opacity: 0;
-            }
-
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-                opacity: 1;
-            }
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 50px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent-color);
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent-color);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        main {
-            padding-top: 80px;
-        }
-
-        .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-        }
-
-        .hero-content h1 {
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
-            margin-bottom: 20px;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: slideUp 1s ease-out;
-        }
-
-        .hero-content p {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            margin-bottom: 40px;
-            animation: slideUp 1s ease-out 0.3s both;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .cta-button {
-            padding: 15px 40px;
-            background: var(--primary-gradient);
-            border: none;
-            border-radius: 50px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            animation: slideUp 1s ease-out 0.6s both;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
-        }
-
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .cta-button:hover::before {
-            left: 100%;
-        }
-
-        .features {
-            padding: 100px 50px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
         }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-            margin-top: 60px;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--accent-color);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--secondary-gradient);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary-gradient);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        .code-snippet {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 14px;
-            color: #00ff88;
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .code-snippet::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 3px;
-            height: 100%;
-            background: var(--accent-color);
-        }
-
-        .typing-animation {
-            border-right: 2px solid var(--accent-color);
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-
-            0%,
-            50% {
-                border-color: var(--accent-color);
-            }
-
-            51%,
-            100% {
-                border-color: transparent;
-            }
-        }
-
-        .tech-stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 60px 0;
+        h1 {
+            color: var(--primary-color);
             text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .stat {
-            color: var(--text-secondary);
+        .link-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--accent-color);
+        .link-list li {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .link-list li:hover {
+            transform: translateY(-5px);
+        }
+
+        .link-list a {
             display: block;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
         }
 
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            .features {
-                padding: 50px 20px;
-            }
-
-            .hero-content h1 {
-                font-size: 3rem;
-            }
-
-            .tech-stats {
-                flex-direction: column;
-                gap: 30px;
-            }
+        .updated {
+            color: #6c757d;
+            font-size: 0.9em;
+            text-align: center;
+            margin-top: 2rem;
+            opacity: 0.8;
         }
     </style>
 </head>
-
 <body>
-    <div class="background-grid"></div>
-    <div class="floating-particles"></div>
-
-    <header>
-        <nav>
-            <div class="logo">TechCore</div>
-            <ul class="nav-links">
-                <li><a href="/map">Map</a></li>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#solutions">Solutions</a></li>
-                <li><a href="#tech">Technology</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Next-Gen Solutions</h1>
-                <p>Where innovation meets implementation</p>
-                <button class="cta-button">Explore Technology</button>
-            </div>
-        </section>
-
-        <section class="features">
-            <div class="tech-stats">
-                <div class="stat">
-                    <span class="stat-number">99.9%</span>
-                    Uptime
-                </div>
-                <div class="stat">
-                    <span class="stat-number">10ms</span>
-                    Latency
-                </div>
-                <div class="stat">
-                    <span class="stat-number">500K+</span>
-                    Operations/sec
-                </div>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Lightning Performance</h3>
-                    <p>Optimized algorithms delivering microsecond response times with distributed computing
-                        architecture.</p>
-                    <div class="code-snippet">
-                        const optimize = async (data) => {
-                        return await quantum.process(data);
-                        }<span class="typing-animation"></span></div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Military-Grade Security</h3>
-                    <p>End-to-end encryption with blockchain verification ensuring zero-trust architecture.</p>
-                    <div class="code-snippet">
-                        encrypt(payload, {
-                        algorithm: 'AES-256-GCM',
-                        keyDerivation: 'PBKDF2'
-                        })<span class="typing-animation"></span></div>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🌐</div>
-                    <h3>Global Infrastructure</h3>
-                    <p>Edge computing nodes across 40+ regions with intelligent load balancing and auto-scaling.</p>
-                    <div class="code-snippet">
-                        cluster.deploy({
-                        regions: 'worldwide',
-                        scaling: 'auto'
-                        })<span class="typing-animation"></span></div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // Floating particles animation
-        function createParticles() {
-            const container = document.querySelector('.floating-particles');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                container.appendChild(particle);
-            }
-        }
-
-        // Smooth scrolling for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Initialize
-        createParticles();
-
-        // Add parallax effect to hero
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.querySelector('.hero');
-            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
-        });
-
-        // Animate stats on scroll
-        const observerOptions = {
-            threshold: 0.5,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animationPlayState = 'running';
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.feature-card').forEach(card => {
-            observer.observe(card);
-        });
-    </script>
+    <h1>📚 网站内容索引</h1>
+    <ul class="link-list">
+        <li><a href="https://qinag.fun/solar_system">3D太阳系模型</a></li>
+        <li><a href="https://qinag.fun/404">404 Not Found</a></li>
+        <li><a href="https://qinag.fun/android">AI助手 - 安卓风格</a></li>
+        <li><a href="https://qinag.fun/galaxy">Particle Galaxy</a></li>
+        <li><a href="https://qinag.fun/sms">SMS优质短信接码平台大全 - 多国号码支持，免费便捷接收验证码</a></li>
+        <li><a href="https://qinag.fun/japen">合肥 - 日本关西秋日浪漫之旅</a></li>
+        <li><a href="https://qinag.fun/draw/">手部追踪画图应用</a></li>
+        <li><a href="https://qinag.fun/share">文件快传</a></li>
+        <li><a href="https://qinag.fun/summer">皖赣山水探秘之旅（景德镇·黄山·宣城）</a></li>
+        <li><a href="https://qinag.fun/love/">给曹明婷的导航页</a></li>
+        <li><a href="https://qinag.fun/tts">翰墨听音阁 - AI语音合成</a></li>
+        <li><a href="https://qinag.fun/su2">苏联式冷笑话生成器</a></li>
+        <li><a href="https://qinag.fun/su1">苏联政治冷笑话生成器</a></li>
+        <li><a href="https://qinag.fun/xiyun/">蒙城县析云网络科技公司</a></li>
+        <li><a href="https://qinag.fun/cv">贾国强-个人简历</a></li>
+    </ul>
+    <p class="updated">最后更新: 2025-08-13 10:48:39</p>
 </body>
-
 </html>
